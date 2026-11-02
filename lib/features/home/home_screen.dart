@@ -9,6 +9,7 @@ import '../../data/database/app_database.dart';
 import '../../data/models/device_role.dart';
 import '../../data/providers.dart';
 import '../../data/models/media_enums.dart';
+import '../../data/models/schedule.dart';
 import '../../data/repositories/media_inventory_repository.dart';
 import '../media_library/camera_library_card.dart';
 import '../media_library/media_access_notice.dart';
@@ -16,6 +17,9 @@ import '../media_library/media_display.dart';
 import '../media_library/media_library_providers.dart';
 import '../onboarding/device_role_controller.dart';
 import '../pairing/receiver_controller.dart';
+import '../schedule/schedule_controller.dart';
+import '../schedule/schedule_screen.dart';
+import '../schedule/schedule_text.dart';
 import '../transfer/transfer_controller.dart';
 import '../transfer/transfer_limits_text.dart';
 import '../onboarding/device_role_display.dart';
@@ -104,10 +108,18 @@ class HomeScreen extends ConsumerWidget {
                     value: _tabSummary(stats, tab),
                     onTap: () => context.push(AppRoutes.libraryTab(tab)),
                   ),
-              const _StatusTile(
+              _StatusTile(
                 icon: Icons.schedule_rounded,
                 title: 'Daily transfer',
-                value: 'Off',
+                value: switch (ref.watch(scheduleProvider).value) {
+                  (final settings, final status)? => _scheduleSummary(
+                    context,
+                    settings,
+                    status,
+                  ),
+                  null => '…',
+                },
+                onTap: () => context.push(AppRoutes.schedule),
               ),
             ],
             DeviceRole.receiver => [
@@ -162,9 +174,12 @@ class _TransferCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final transfer = ref.watch(transferControllerProvider);
+    final background = ref.watch(backgroundRunProvider);
     final theme = Theme.of(context);
     final String hint;
-    if (!paired) {
+    if (background != null) {
+      hint = describeBackgroundRun(background);
+    } else if (!paired) {
       hint = 'Pair with the receiver to start sending.';
     } else if (sendable == 0) {
       hint = 'Nothing waiting to send.';
@@ -193,6 +208,14 @@ class _TransferCard extends ConsumerWidget {
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
+            if (background != null) ...[
+              const SizedBox(height: 8),
+              LinearProgressIndicator(
+                value: background.totalBytes == 0
+                    ? null
+                    : background.sentBytes / background.totalBytes,
+              ),
+            ],
             const SizedBox(height: 4),
             const TransferLimitsText(),
             const SizedBox(height: 16),
@@ -211,7 +234,7 @@ class _TransferCard extends ConsumerWidget {
                       ),
                     )
                   : FilledButton.icon(
-                      onPressed: paired && sendable > 0
+                      onPressed: paired && sendable > 0 && background == null
                           ? () {
                               ref
                                   .read(transferControllerProvider.notifier)
@@ -304,9 +327,13 @@ class _ReadyToReceiveTile extends ConsumerWidget {
     final state = ref.watch(receiverControllerProvider);
     final theme = Theme.of(context);
     final subtitle = switch (state.phase) {
-      ReceiverPhase.off => 'Keeps the screen on while receiving',
+      ReceiverPhase.off => 'Keeps listening in the background',
       ReceiverPhase.starting => 'Starting…',
-      ReceiverPhase.ready => 'Listening on port ${state.port}',
+      ReceiverPhase.ready when state.runsInBackground =>
+        'Listening on port ${state.port}. You can lock the screen; keep the '
+            'app in recent apps.',
+      ReceiverPhase.ready =>
+        'Listening on port ${state.port}. Keep this screen open.',
       ReceiverPhase.failed => state.error ?? 'Could not start',
     };
     return Card(
@@ -329,6 +356,20 @@ class _ReadyToReceiveTile extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// "Off", or the next run: "Today around 9:00 PM".
+String _scheduleSummary(
+  BuildContext context,
+  ScheduleSettings settings,
+  ScheduleStatus status,
+) {
+  if (!settings.enabled) return 'Off';
+  final next = status.nextRunEstimate;
+  if (next == null) return describeSchedule(context, settings);
+  final now = DateTime.now();
+  if (!next.isAfter(now)) return 'Due now';
+  return '${relativeDay(next, now)}, ${formatClock(context, next)}';
 }
 
 String _tabSummary(InventoryStats stats, LibraryTab tab) {

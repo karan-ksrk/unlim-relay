@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/services.dart' show PlatformException;
+
 import 'protocol/frame_codec.dart';
 import 'protocol/luma_connection.dart';
 import 'receiver_locator.dart';
 import 'sender_client.dart';
 import '../app/app_info.dart';
+import '../data/repositories/transfer_lock_repository.dart';
 
 /// User-facing explanation for a pairing or transfer failure.
 String describeTransferError(Object error, {String? host}) => switch (error) {
@@ -13,9 +16,14 @@ String describeTransferError(Object error, {String? host}) => switch (error) {
     'The receiver could not be verified. Show a new pairing code on the '
         'receiver and scan it again.',
   NotPairedException() => '$error',
+  TransferBusyException(holder: TransferLockOwner.schedule) =>
+    'The daily transfer is running in the background. It continues on its '
+        'own; check its progress on the home screen.',
+  TransferBusyException() => 'Another transfer is already running.',
   PairingRejectedException(:final reason) => reason,
   RemoteErrorException(:final error) => error.message,
-  SocketException(:final osError?) when _refusedCodes.contains(osError.errorCode) =>
+  SocketException(:final osError?)
+      when _refusedCodes.contains(osError.errorCode) =>
     'The receiver${host == null ? '' : ' at $host'} is not accepting '
         'connections. Open $appName on the receiver phone and turn on Ready '
         'to receive.',
@@ -25,6 +33,9 @@ String describeTransferError(Object error, {String? host}) => switch (error) {
         'phones are on the same Wi-Fi.',
   ProtocolException(:final message) => 'Communication error: $message',
   FileSystemException(:final message) => 'Could not read the file: $message',
+  // The details hold a native stack trace; the message is enough.
+  PlatformException(:final code, :final message) =>
+    'Something went wrong: ${message ?? code}',
   _ => 'Something went wrong: $error',
 };
 

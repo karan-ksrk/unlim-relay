@@ -8,6 +8,8 @@ import '../../data/providers.dart';
 import '../onboarding/device_role_controller.dart';
 import '../onboarding/device_role_display.dart';
 import '../pairing/receiver_controller.dart';
+import '../schedule/schedule_controller.dart';
+import '../schedule/schedule_text.dart';
 import '../transfer/transfer_controller.dart';
 import '../transfer/transfer_limits_text.dart';
 import 'transfer_limits_dialog.dart';
@@ -83,6 +85,18 @@ class SettingsScreen extends ConsumerWidget {
                 },
               ),
               onTap: () => _editLimits(context, ref),
+            ),
+          if (role == DeviceRole.sender)
+            ListTile(
+              leading: const Icon(Icons.schedule_rounded),
+              title: const Text('Daily transfer'),
+              subtitle: Text(
+                switch (ref.watch(scheduleProvider).value) {
+                  (final settings, _)? => describeSchedule(context, settings),
+                  null => '…',
+                },
+              ),
+              onTap: () => context.push(AppRoutes.schedule),
             ),
           ListTile(
             leading: const Icon(Icons.swap_horiz_rounded),

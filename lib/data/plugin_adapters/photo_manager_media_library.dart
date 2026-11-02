@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:logging/logging.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import '../models/media_enums.dart';
@@ -10,7 +11,12 @@ import 'media_library.dart';
 
 /// [MediaLibrary] backed by `package:photo_manager` (Android MediaStore).
 class PhotoManagerMediaLibrary implements MediaLibrary {
+  /// [inBackground] is for the WorkManager engine, which has no Activity.
+  PhotoManagerMediaLibrary({this.inBackground = false});
+
   static final _log = Logger('PhotoManagerMediaLibrary');
+
+  final bool inBackground;
 
   /// `mediaLocation` grants ACCESS_MEDIA_LOCATION so original files keep
   /// their GPS EXIF when read; without it Android redacts it.
@@ -44,9 +50,27 @@ class PhotoManagerMediaLibrary implements MediaLibrary {
   );
 
   @override
-  Future<MediaAccess> currentAccess() async => _toAccess(
-    await PhotoManager.getPermissionState(requestOption: _permissionOption),
-  );
+  Future<MediaAccess> currentAccess() async {
+    if (inBackground) return _backgroundAccess();
+    return _toAccess(
+      await PhotoManager.getPermissionState(requestOption: _permissionOption),
+    );
+  }
+
+  /// photo_manager's permission check needs an Activity; permission_handler
+  /// reads the same runtime permissions (READ_MEDIA_IMAGES/VIDEO, or storage
+  /// on Android 12 and lower) from the application context.
+  static Future<MediaAccess> _backgroundAccess() async {
+    final statuses = [
+      await Permission.photos.status,
+      await Permission.videos.status,
+    ];
+    if (statuses.every((status) => status.isGranted)) return MediaAccess.full;
+    if (statuses.any((status) => status.isGranted || status.isLimited)) {
+      return MediaAccess.limited;
+    }
+    return MediaAccess.denied;
+  }
 
   @override
   Future<void> openSettings() => PhotoManager.openSetting();

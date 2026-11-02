@@ -31,6 +31,8 @@ void main() {
       );
       expect(await db.select(db.mediaItems).get(), isEmpty);
       expect(await db.select(db.pairedDevices).get(), isEmpty);
+      expect(await db.select(db.scheduleSettingsTable).get(), isEmpty);
+      expect(await db.select(db.transferLocks).get(), isEmpty);
 
       final indexes = await db
           .customSelect(

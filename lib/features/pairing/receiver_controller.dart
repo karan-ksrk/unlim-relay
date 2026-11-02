@@ -5,6 +5,9 @@ import 'package:logging/logging.dart';
 
 import '../../core/platform/network_address.dart';
 import '../../data/models/device_role.dart';
+import '../../data/plugin_adapters/receiver_keep_alive.dart';
+import '../../data/plugin_adapters/screen_wake_lock.dart';
+import '../../data/plugin_adapters/service_discovery.dart';
 import '../../data/providers.dart';
 import '../onboarding/device_role_controller.dart';
 import '../../services/pairing_invite.dart';
@@ -36,6 +39,7 @@ class ReceiverState {
     this.lastFailure,
     this.message,
     this.error,
+    this.runsInBackground = false,
   });
 
   final ReceiverPhase phase;
@@ -55,6 +59,10 @@ class ReceiverState {
   final String? message;
   final String? error;
 
+  /// The foreground service is keeping the receiver alive with the screen
+  /// off. When false the screen is kept on instead.
+  final bool runsInBackground;
+
   bool get isReady => phase == ReceiverPhase.ready;
 
   ReceiverState copyWith({
@@ -70,6 +78,7 @@ class ReceiverState {
     String? lastFailure,
     Object? message = _keep,
     Object? error = _keep,
+    bool? runsInBackground,
   }) => ReceiverState(
     phase: phase ?? this.phase,
     port: port ?? this.port,
@@ -89,6 +98,7 @@ class ReceiverState {
     lastFailure: lastFailure ?? this.lastFailure,
     message: message == _keep ? this.message : message as String?,
     error: error == _keep ? this.error : error as String?,
+    runsInBackground: runsInBackground ?? this.runsInBackground,
   );
 }
 
@@ -101,16 +111,27 @@ final tlsIdentityStoreProvider = Provider<TlsIdentityStore>(
 final receiverControllerProvider =
     NotifierProvider<ReceiverController, ReceiverState>(ReceiverController.new);
 
-/// Runs the receiver server while "Ready to receive" is on (plan §2.3: the
-/// MVP requires the receiver app to be open).
+/// Runs the receiver server while "Ready to receive" is on. A foreground
+/// service keeps it running with the screen off or the app in the
+/// background (plan §2.3); if Android refuses the service, the screen is
+/// kept on instead.
 class ReceiverController extends Notifier<ReceiverState> {
   static final _log = Logger('ReceiverController');
 
   ReceiverServer? _server;
+  Future<void>? _starting;
   StreamSubscription<ReceiverEvent>? _events;
+  late ReceiverKeepAlive _keepAliveService;
+  late ScreenWakeLock _screenWakeLock;
+  late ServiceDiscovery _discovery;
 
   @override
   ReceiverState build() {
+    // Read now: providers can't be read from onDispose, where _shutdown
+    // also runs.
+    _keepAliveService = ref.read(receiverKeepAliveProvider);
+    _screenWakeLock = ref.read(screenWakeLockProvider);
+    _discovery = ref.read(serviceDiscoveryProvider);
     ref.onDispose(_shutdown);
     Future.microtask(_resumeIfWasReady);
     return const ReceiverState();
@@ -129,6 +150,15 @@ class ReceiverController extends Notifier<ReceiverState> {
 
   Future<void> setReady(bool ready) async {
     await ref.read(settingsRepositoryProvider).saveReceiverReady(ready);
+    if (ready) {
+      // Android 13+ hides the service notification without it; the
+      // service itself runs either way.
+      try {
+        await ref.read(transferNotificationsProvider).requestPermission();
+      } on Object catch (error) {
+        _log.warning('Notification permission request failed: $error');
+      }
+    }
     await (ready ? _start() : _stop());
   }
 
@@ -165,8 +195,13 @@ class ReceiverController extends Notifier<ReceiverState> {
     }
   }
 
-  Future<void> _start() async {
-    if (state.phase == ReceiverPhase.starting || _server != null) return;
+  /// Callers that overlap (auto-resume and the switch) share one start.
+  Future<void> _start() {
+    if (_server != null) return Future.value();
+    return _starting ??= _doStart().whenComplete(() => _starting = null);
+  }
+
+  Future<void> _doStart() async {
     state = state.copyWith(phase: ReceiverPhase.starting, error: null);
     try {
       final local = ref.read(localDeviceProvider);
@@ -190,8 +225,13 @@ class ReceiverController extends Notifier<ReceiverState> {
       final port = await server.start();
       _server = server;
       _events = server.events.listen(_onEvent);
-      state = state.copyWith(phase: ReceiverPhase.ready, port: port);
-      await _wakeLock(enable: true);
+      final background = await _keepAlive(start: true);
+      if (!background) await _wakeLock(enable: true);
+      state = state.copyWith(
+        phase: ReceiverPhase.ready,
+        port: port,
+        runsInBackground: background,
+      );
 
       // Discovery helps the sender find a new IP later; pairing works
       // without it, so a failure here is not fatal.
@@ -217,6 +257,7 @@ class ReceiverController extends Notifier<ReceiverState> {
   }
 
   Future<void> _shutdown() async {
+    await _keepAlive(start: false);
     await _wakeLock(enable: false);
     await _events?.cancel();
     _events = null;
@@ -224,7 +265,7 @@ class ReceiverController extends Notifier<ReceiverState> {
     _server = null;
     await server?.stop();
     try {
-      await ref.read(serviceDiscoveryProvider).stopAdvertising();
+      await _discovery.stopAdvertising();
     } on Object catch (error) {
       _log.warning('Stopping mDNS failed: $error');
     }
@@ -246,9 +287,20 @@ class ReceiverController extends Notifier<ReceiverState> {
         });
   }
 
+  Future<bool> _keepAlive({required bool start}) async {
+    final keepAlive = _keepAliveService;
+    try {
+      if (start) return await keepAlive.start();
+      await keepAlive.stop();
+    } on Object catch (error) {
+      _log.warning('Receiver foreground service: $error');
+    }
+    return false;
+  }
+
   Future<void> _wakeLock({required bool enable}) async {
     try {
-      final lock = ref.read(screenWakeLockProvider);
+      final lock = _screenWakeLock;
       await (enable ? lock.enable() : lock.disable());
     } on Object catch (error) {
       _log.warning('Wake lock: $error');

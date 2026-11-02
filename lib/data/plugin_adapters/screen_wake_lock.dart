@@ -1,8 +1,7 @@
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-/// Keeps the screen on while a transfer or "Ready to receive" is active, so
-/// Android doesn't suspend the app mid-transfer (plan §2.3 MVP: both apps
-/// open).
+/// Keeps the screen on during a manual transfer, and on the receiver when
+/// its foreground service can't start, so Android doesn't suspend the app.
 abstract interface class ScreenWakeLock {
   Future<void> enable();
 

@@ -74,6 +74,58 @@ void main() {
     await container.read(receiverControllerProvider.notifier).setReady(false);
   });
 
+  test(
+    'Ready to receive runs as a foreground service, not screen-on',
+    () async {
+      final keepAlive = FakeReceiverKeepAlive();
+      final wakeLock = FakeScreenWakeLock();
+      final container = ProviderContainer.test(
+        overrides: appOverrides(
+          db: db,
+          settings: FakeSettingsRepository(DeviceRole.receiver),
+          keepAlive: keepAlive,
+          wakeLock: wakeLock,
+        ),
+      );
+      final controller = container.read(receiverControllerProvider.notifier);
+
+      await controller.setReady(true);
+
+      expect(
+        container.read(receiverControllerProvider).runsInBackground,
+        isTrue,
+      );
+      expect(keepAlive.running, isTrue);
+      expect(wakeLock.enabled, isFalse);
+
+      await controller.setReady(false);
+      expect(keepAlive.running, isFalse);
+    },
+  );
+
+  test('keeps the screen on when the service cannot start', () async {
+    final wakeLock = FakeScreenWakeLock();
+    final container = ProviderContainer.test(
+      overrides: appOverrides(
+        db: db,
+        settings: FakeSettingsRepository(DeviceRole.receiver),
+        keepAlive: FakeReceiverKeepAlive(available: false),
+        wakeLock: wakeLock,
+      ),
+    );
+    final controller = container.read(receiverControllerProvider.notifier);
+
+    await controller.setReady(true);
+
+    final state = container.read(receiverControllerProvider);
+    expect(state.phase, ReceiverPhase.ready);
+    expect(state.runsInBackground, isFalse);
+    expect(wakeLock.enabled, isTrue);
+
+    await controller.setReady(false);
+    expect(wakeLock.enabled, isFalse);
+  });
+
   test('a refused connection says to turn on Ready to receive', () async {
     // Bind and release a port so nothing is listening on it.
     final probe = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);

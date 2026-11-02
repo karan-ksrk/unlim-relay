@@ -11,6 +11,17 @@
          the redacted copy Android serves by default. Not a location
          permission. -->
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+    <!-- Sender: lets the user exempt the app from battery optimization so
+         the daily transfer isn't delayed or killed. Asked only from the
+         Schedule screen. WorkManager adds RECEIVE_BOOT_COMPLETED and the
+         foreground-service permissions; notifications add
+         POST_NOTIFICATIONS. -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <!-- Receiver: the "Ready to receive" foreground service talks to the
+         paired phone over the local network. Android 14+ also requires a
+         network permission for this type; CHANGE_WIFI_MULTICAST_STATE
+         (declared by bonsoir) satisfies it. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
     <application
         android:label="UNLIM RELAY"
         android:name="${applicationName}"
@@ -37,6 +48,14 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- flutter_foreground_task: keeps the receiver listening with the
+             screen off or the app in the background. Stops when the app is
+             swiped away, since the receiver lives in the app's engine. -->
+        <service
+            android:name="com.pravera.flutter_foreground_task.service.ForegroundService"
+            android:foregroundServiceType="connectedDevice"
+            android:stopWithTask="true"
+            android:exported="false" />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

@@ -30,7 +30,17 @@ for the full plan.
   (default 100 photos + 5 videos, configurable); progress screen, Transfer
   now / Transfer selected. Schema v4 (`received_files`).
 
-Daily scheduling is next. See [docs/transfer.md](docs/transfer.md),
+- **Milestone 5** (daily schedule): WorkManager background run at a chosen
+  time and days with Wi-Fi/charging/battery constraints, retries, a
+  cross-engine transfer lock, result notifications, battery-optimization
+  prompt, Run now, last/next run status. Schema v5 (`schedule_settings`,
+  `transfer_locks`).
+
+- **Background receiving**: *Ready to receive* runs as a foreground
+  service, so the receiver keeps listening with the screen off.
+
+Manual cleanup and hardening are next. See [docs/schedule.md](docs/schedule.md),
+[docs/transfer.md](docs/transfer.md),
 [docs/pairing.md](docs/pairing.md),
 [docs/device-compatibility.md](docs/device-compatibility.md) and
 [docs/permissions.md](docs/permissions.md).
@@ -53,8 +63,10 @@ lib/
   core/       logging, formatters, secrets, network address
   data/       Drift database, models, repositories, plugin adapters
   services/   scan, reconciler, TLS identity, receiver server, sender
-              client, wire protocol
-  features/   onboarding, home, media_library, pairing, settings
+              client, wire protocol, schedule planner and job
+  background/ WorkManager entry point (separate engine)
+  features/   onboarding, home, media_library, pairing, transfer,
+              schedule, settings
 test/
   unit/       repositories, controllers, protocol, migrations
   integration/ real TLS pairing over loopback

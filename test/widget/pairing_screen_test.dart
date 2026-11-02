@@ -80,7 +80,7 @@ void main() {
     await pump(tester, DeviceRole.receiver);
 
     expect(find.text('Ready to receive'), findsOneWidget);
-    expect(find.text('Keeps the screen on while receiving'), findsOneWidget);
+    expect(find.text('Keeps listening in the background'), findsOneWidget);
     expect(find.text('Sender'), findsOneWidget);
   });
 }

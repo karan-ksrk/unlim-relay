@@ -2505,6 +2505,1113 @@ class ReceivedFilesCompanion extends UpdateCompanion<ReceivedFile> {
   }
 }
 
+class $ScheduleSettingsTableTable extends ScheduleSettingsTable
+    with TableInfo<$ScheduleSettingsTableTable, ScheduleRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ScheduleSettingsTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _enabledMeta = const VerificationMeta(
+    'enabled',
+  );
+  @override
+  late final GeneratedColumn<bool> enabled = GeneratedColumn<bool>(
+    'enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("enabled" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _hourMeta = const VerificationMeta('hour');
+  @override
+  late final GeneratedColumn<int> hour = GeneratedColumn<int>(
+    'hour',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _minuteMeta = const VerificationMeta('minute');
+  @override
+  late final GeneratedColumn<int> minute = GeneratedColumn<int>(
+    'minute',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _weekdaysMeta = const VerificationMeta(
+    'weekdays',
+  );
+  @override
+  late final GeneratedColumn<String> weekdays = GeneratedColumn<String>(
+    'weekdays',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _wifiOnlyMeta = const VerificationMeta(
+    'wifiOnly',
+  );
+  @override
+  late final GeneratedColumn<bool> wifiOnly = GeneratedColumn<bool>(
+    'wifi_only',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("wifi_only" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _chargingOnlyMeta = const VerificationMeta(
+    'chargingOnly',
+  );
+  @override
+  late final GeneratedColumn<bool> chargingOnly = GeneratedColumn<bool>(
+    'charging_only',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("charging_only" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _retryHoursMeta = const VerificationMeta(
+    'retryHours',
+  );
+  @override
+  late final GeneratedColumn<int> retryHours = GeneratedColumn<int>(
+    'retry_hours',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _enabledAtMeta = const VerificationMeta(
+    'enabledAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> enabledAt = GeneratedColumn<DateTime>(
+    'enabled_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastAttemptAtMeta = const VerificationMeta(
+    'lastAttemptAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastAttemptAt =
+      GeneratedColumn<DateTime>(
+        'last_attempt_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _lastOutcomeMeta = const VerificationMeta(
+    'lastOutcome',
+  );
+  @override
+  late final GeneratedColumn<String> lastOutcome = GeneratedColumn<String>(
+    'last_outcome',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastMessageMeta = const VerificationMeta(
+    'lastMessage',
+  );
+  @override
+  late final GeneratedColumn<String> lastMessage = GeneratedColumn<String>(
+    'last_message',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastSuccessAtMeta = const VerificationMeta(
+    'lastSuccessAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastSuccessAt =
+      GeneratedColumn<DateTime>(
+        'last_success_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _nextRunEstimateMeta = const VerificationMeta(
+    'nextRunEstimate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> nextRunEstimate =
+      GeneratedColumn<DateTime>(
+        'next_run_estimate',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    enabled,
+    hour,
+    minute,
+    weekdays,
+    wifiOnly,
+    chargingOnly,
+    retryHours,
+    enabledAt,
+    lastAttemptAt,
+    lastOutcome,
+    lastMessage,
+    lastSuccessAt,
+    nextRunEstimate,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'schedule_settings';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ScheduleRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('enabled')) {
+      context.handle(
+        _enabledMeta,
+        enabled.isAcceptableOrUnknown(data['enabled']!, _enabledMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_enabledMeta);
+    }
+    if (data.containsKey('hour')) {
+      context.handle(
+        _hourMeta,
+        hour.isAcceptableOrUnknown(data['hour']!, _hourMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hourMeta);
+    }
+    if (data.containsKey('minute')) {
+      context.handle(
+        _minuteMeta,
+        minute.isAcceptableOrUnknown(data['minute']!, _minuteMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_minuteMeta);
+    }
+    if (data.containsKey('weekdays')) {
+      context.handle(
+        _weekdaysMeta,
+        weekdays.isAcceptableOrUnknown(data['weekdays']!, _weekdaysMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_weekdaysMeta);
+    }
+    if (data.containsKey('wifi_only')) {
+      context.handle(
+        _wifiOnlyMeta,
+        wifiOnly.isAcceptableOrUnknown(data['wifi_only']!, _wifiOnlyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_wifiOnlyMeta);
+    }
+    if (data.containsKey('charging_only')) {
+      context.handle(
+        _chargingOnlyMeta,
+        chargingOnly.isAcceptableOrUnknown(
+          data['charging_only']!,
+          _chargingOnlyMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_chargingOnlyMeta);
+    }
+    if (data.containsKey('retry_hours')) {
+      context.handle(
+        _retryHoursMeta,
+        retryHours.isAcceptableOrUnknown(data['retry_hours']!, _retryHoursMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_retryHoursMeta);
+    }
+    if (data.containsKey('enabled_at')) {
+      context.handle(
+        _enabledAtMeta,
+        enabledAt.isAcceptableOrUnknown(data['enabled_at']!, _enabledAtMeta),
+      );
+    }
+    if (data.containsKey('last_attempt_at')) {
+      context.handle(
+        _lastAttemptAtMeta,
+        lastAttemptAt.isAcceptableOrUnknown(
+          data['last_attempt_at']!,
+          _lastAttemptAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_outcome')) {
+      context.handle(
+        _lastOutcomeMeta,
+        lastOutcome.isAcceptableOrUnknown(
+          data['last_outcome']!,
+          _lastOutcomeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_message')) {
+      context.handle(
+        _lastMessageMeta,
+        lastMessage.isAcceptableOrUnknown(
+          data['last_message']!,
+          _lastMessageMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_success_at')) {
+      context.handle(
+        _lastSuccessAtMeta,
+        lastSuccessAt.isAcceptableOrUnknown(
+          data['last_success_at']!,
+          _lastSuccessAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('next_run_estimate')) {
+      context.handle(
+        _nextRunEstimateMeta,
+        nextRunEstimate.isAcceptableOrUnknown(
+          data['next_run_estimate']!,
+          _nextRunEstimateMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ScheduleRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ScheduleRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      enabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}enabled'],
+      )!,
+      hour: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}hour'],
+      )!,
+      minute: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}minute'],
+      )!,
+      weekdays: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}weekdays'],
+      )!,
+      wifiOnly: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}wifi_only'],
+      )!,
+      chargingOnly: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}charging_only'],
+      )!,
+      retryHours: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}retry_hours'],
+      )!,
+      enabledAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}enabled_at'],
+      ),
+      lastAttemptAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_attempt_at'],
+      ),
+      lastOutcome: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_outcome'],
+      ),
+      lastMessage: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_message'],
+      ),
+      lastSuccessAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_success_at'],
+      ),
+      nextRunEstimate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}next_run_estimate'],
+      ),
+    );
+  }
+
+  @override
+  $ScheduleSettingsTableTable createAlias(String alias) {
+    return $ScheduleSettingsTableTable(attachedDatabase, alias);
+  }
+}
+
+class ScheduleRow extends DataClass implements Insertable<ScheduleRow> {
+  final int id;
+  final bool enabled;
+  final int hour;
+  final int minute;
+
+  /// ISO weekdays as "1,2,3".
+  final String weekdays;
+  final bool wifiOnly;
+  final bool chargingOnly;
+  final int retryHours;
+  final DateTime? enabledAt;
+  final DateTime? lastAttemptAt;
+  final String? lastOutcome;
+  final String? lastMessage;
+  final DateTime? lastSuccessAt;
+  final DateTime? nextRunEstimate;
+  const ScheduleRow({
+    required this.id,
+    required this.enabled,
+    required this.hour,
+    required this.minute,
+    required this.weekdays,
+    required this.wifiOnly,
+    required this.chargingOnly,
+    required this.retryHours,
+    this.enabledAt,
+    this.lastAttemptAt,
+    this.lastOutcome,
+    this.lastMessage,
+    this.lastSuccessAt,
+    this.nextRunEstimate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['enabled'] = Variable<bool>(enabled);
+    map['hour'] = Variable<int>(hour);
+    map['minute'] = Variable<int>(minute);
+    map['weekdays'] = Variable<String>(weekdays);
+    map['wifi_only'] = Variable<bool>(wifiOnly);
+    map['charging_only'] = Variable<bool>(chargingOnly);
+    map['retry_hours'] = Variable<int>(retryHours);
+    if (!nullToAbsent || enabledAt != null) {
+      map['enabled_at'] = Variable<DateTime>(enabledAt);
+    }
+    if (!nullToAbsent || lastAttemptAt != null) {
+      map['last_attempt_at'] = Variable<DateTime>(lastAttemptAt);
+    }
+    if (!nullToAbsent || lastOutcome != null) {
+      map['last_outcome'] = Variable<String>(lastOutcome);
+    }
+    if (!nullToAbsent || lastMessage != null) {
+      map['last_message'] = Variable<String>(lastMessage);
+    }
+    if (!nullToAbsent || lastSuccessAt != null) {
+      map['last_success_at'] = Variable<DateTime>(lastSuccessAt);
+    }
+    if (!nullToAbsent || nextRunEstimate != null) {
+      map['next_run_estimate'] = Variable<DateTime>(nextRunEstimate);
+    }
+    return map;
+  }
+
+  ScheduleSettingsTableCompanion toCompanion(bool nullToAbsent) {
+    return ScheduleSettingsTableCompanion(
+      id: Value(id),
+      enabled: Value(enabled),
+      hour: Value(hour),
+      minute: Value(minute),
+      weekdays: Value(weekdays),
+      wifiOnly: Value(wifiOnly),
+      chargingOnly: Value(chargingOnly),
+      retryHours: Value(retryHours),
+      enabledAt: enabledAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(enabledAt),
+      lastAttemptAt: lastAttemptAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastAttemptAt),
+      lastOutcome: lastOutcome == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastOutcome),
+      lastMessage: lastMessage == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastMessage),
+      lastSuccessAt: lastSuccessAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSuccessAt),
+      nextRunEstimate: nextRunEstimate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nextRunEstimate),
+    );
+  }
+
+  factory ScheduleRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ScheduleRow(
+      id: serializer.fromJson<int>(json['id']),
+      enabled: serializer.fromJson<bool>(json['enabled']),
+      hour: serializer.fromJson<int>(json['hour']),
+      minute: serializer.fromJson<int>(json['minute']),
+      weekdays: serializer.fromJson<String>(json['weekdays']),
+      wifiOnly: serializer.fromJson<bool>(json['wifiOnly']),
+      chargingOnly: serializer.fromJson<bool>(json['chargingOnly']),
+      retryHours: serializer.fromJson<int>(json['retryHours']),
+      enabledAt: serializer.fromJson<DateTime?>(json['enabledAt']),
+      lastAttemptAt: serializer.fromJson<DateTime?>(json['lastAttemptAt']),
+      lastOutcome: serializer.fromJson<String?>(json['lastOutcome']),
+      lastMessage: serializer.fromJson<String?>(json['lastMessage']),
+      lastSuccessAt: serializer.fromJson<DateTime?>(json['lastSuccessAt']),
+      nextRunEstimate: serializer.fromJson<DateTime?>(json['nextRunEstimate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'enabled': serializer.toJson<bool>(enabled),
+      'hour': serializer.toJson<int>(hour),
+      'minute': serializer.toJson<int>(minute),
+      'weekdays': serializer.toJson<String>(weekdays),
+      'wifiOnly': serializer.toJson<bool>(wifiOnly),
+      'chargingOnly': serializer.toJson<bool>(chargingOnly),
+      'retryHours': serializer.toJson<int>(retryHours),
+      'enabledAt': serializer.toJson<DateTime?>(enabledAt),
+      'lastAttemptAt': serializer.toJson<DateTime?>(lastAttemptAt),
+      'lastOutcome': serializer.toJson<String?>(lastOutcome),
+      'lastMessage': serializer.toJson<String?>(lastMessage),
+      'lastSuccessAt': serializer.toJson<DateTime?>(lastSuccessAt),
+      'nextRunEstimate': serializer.toJson<DateTime?>(nextRunEstimate),
+    };
+  }
+
+  ScheduleRow copyWith({
+    int? id,
+    bool? enabled,
+    int? hour,
+    int? minute,
+    String? weekdays,
+    bool? wifiOnly,
+    bool? chargingOnly,
+    int? retryHours,
+    Value<DateTime?> enabledAt = const Value.absent(),
+    Value<DateTime?> lastAttemptAt = const Value.absent(),
+    Value<String?> lastOutcome = const Value.absent(),
+    Value<String?> lastMessage = const Value.absent(),
+    Value<DateTime?> lastSuccessAt = const Value.absent(),
+    Value<DateTime?> nextRunEstimate = const Value.absent(),
+  }) => ScheduleRow(
+    id: id ?? this.id,
+    enabled: enabled ?? this.enabled,
+    hour: hour ?? this.hour,
+    minute: minute ?? this.minute,
+    weekdays: weekdays ?? this.weekdays,
+    wifiOnly: wifiOnly ?? this.wifiOnly,
+    chargingOnly: chargingOnly ?? this.chargingOnly,
+    retryHours: retryHours ?? this.retryHours,
+    enabledAt: enabledAt.present ? enabledAt.value : this.enabledAt,
+    lastAttemptAt: lastAttemptAt.present
+        ? lastAttemptAt.value
+        : this.lastAttemptAt,
+    lastOutcome: lastOutcome.present ? lastOutcome.value : this.lastOutcome,
+    lastMessage: lastMessage.present ? lastMessage.value : this.lastMessage,
+    lastSuccessAt: lastSuccessAt.present
+        ? lastSuccessAt.value
+        : this.lastSuccessAt,
+    nextRunEstimate: nextRunEstimate.present
+        ? nextRunEstimate.value
+        : this.nextRunEstimate,
+  );
+  ScheduleRow copyWithCompanion(ScheduleSettingsTableCompanion data) {
+    return ScheduleRow(
+      id: data.id.present ? data.id.value : this.id,
+      enabled: data.enabled.present ? data.enabled.value : this.enabled,
+      hour: data.hour.present ? data.hour.value : this.hour,
+      minute: data.minute.present ? data.minute.value : this.minute,
+      weekdays: data.weekdays.present ? data.weekdays.value : this.weekdays,
+      wifiOnly: data.wifiOnly.present ? data.wifiOnly.value : this.wifiOnly,
+      chargingOnly: data.chargingOnly.present
+          ? data.chargingOnly.value
+          : this.chargingOnly,
+      retryHours: data.retryHours.present
+          ? data.retryHours.value
+          : this.retryHours,
+      enabledAt: data.enabledAt.present ? data.enabledAt.value : this.enabledAt,
+      lastAttemptAt: data.lastAttemptAt.present
+          ? data.lastAttemptAt.value
+          : this.lastAttemptAt,
+      lastOutcome: data.lastOutcome.present
+          ? data.lastOutcome.value
+          : this.lastOutcome,
+      lastMessage: data.lastMessage.present
+          ? data.lastMessage.value
+          : this.lastMessage,
+      lastSuccessAt: data.lastSuccessAt.present
+          ? data.lastSuccessAt.value
+          : this.lastSuccessAt,
+      nextRunEstimate: data.nextRunEstimate.present
+          ? data.nextRunEstimate.value
+          : this.nextRunEstimate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ScheduleRow(')
+          ..write('id: $id, ')
+          ..write('enabled: $enabled, ')
+          ..write('hour: $hour, ')
+          ..write('minute: $minute, ')
+          ..write('weekdays: $weekdays, ')
+          ..write('wifiOnly: $wifiOnly, ')
+          ..write('chargingOnly: $chargingOnly, ')
+          ..write('retryHours: $retryHours, ')
+          ..write('enabledAt: $enabledAt, ')
+          ..write('lastAttemptAt: $lastAttemptAt, ')
+          ..write('lastOutcome: $lastOutcome, ')
+          ..write('lastMessage: $lastMessage, ')
+          ..write('lastSuccessAt: $lastSuccessAt, ')
+          ..write('nextRunEstimate: $nextRunEstimate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    enabled,
+    hour,
+    minute,
+    weekdays,
+    wifiOnly,
+    chargingOnly,
+    retryHours,
+    enabledAt,
+    lastAttemptAt,
+    lastOutcome,
+    lastMessage,
+    lastSuccessAt,
+    nextRunEstimate,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ScheduleRow &&
+          other.id == this.id &&
+          other.enabled == this.enabled &&
+          other.hour == this.hour &&
+          other.minute == this.minute &&
+          other.weekdays == this.weekdays &&
+          other.wifiOnly == this.wifiOnly &&
+          other.chargingOnly == this.chargingOnly &&
+          other.retryHours == this.retryHours &&
+          other.enabledAt == this.enabledAt &&
+          other.lastAttemptAt == this.lastAttemptAt &&
+          other.lastOutcome == this.lastOutcome &&
+          other.lastMessage == this.lastMessage &&
+          other.lastSuccessAt == this.lastSuccessAt &&
+          other.nextRunEstimate == this.nextRunEstimate);
+}
+
+class ScheduleSettingsTableCompanion extends UpdateCompanion<ScheduleRow> {
+  final Value<int> id;
+  final Value<bool> enabled;
+  final Value<int> hour;
+  final Value<int> minute;
+  final Value<String> weekdays;
+  final Value<bool> wifiOnly;
+  final Value<bool> chargingOnly;
+  final Value<int> retryHours;
+  final Value<DateTime?> enabledAt;
+  final Value<DateTime?> lastAttemptAt;
+  final Value<String?> lastOutcome;
+  final Value<String?> lastMessage;
+  final Value<DateTime?> lastSuccessAt;
+  final Value<DateTime?> nextRunEstimate;
+  const ScheduleSettingsTableCompanion({
+    this.id = const Value.absent(),
+    this.enabled = const Value.absent(),
+    this.hour = const Value.absent(),
+    this.minute = const Value.absent(),
+    this.weekdays = const Value.absent(),
+    this.wifiOnly = const Value.absent(),
+    this.chargingOnly = const Value.absent(),
+    this.retryHours = const Value.absent(),
+    this.enabledAt = const Value.absent(),
+    this.lastAttemptAt = const Value.absent(),
+    this.lastOutcome = const Value.absent(),
+    this.lastMessage = const Value.absent(),
+    this.lastSuccessAt = const Value.absent(),
+    this.nextRunEstimate = const Value.absent(),
+  });
+  ScheduleSettingsTableCompanion.insert({
+    this.id = const Value.absent(),
+    required bool enabled,
+    required int hour,
+    required int minute,
+    required String weekdays,
+    required bool wifiOnly,
+    required bool chargingOnly,
+    required int retryHours,
+    this.enabledAt = const Value.absent(),
+    this.lastAttemptAt = const Value.absent(),
+    this.lastOutcome = const Value.absent(),
+    this.lastMessage = const Value.absent(),
+    this.lastSuccessAt = const Value.absent(),
+    this.nextRunEstimate = const Value.absent(),
+  }) : enabled = Value(enabled),
+       hour = Value(hour),
+       minute = Value(minute),
+       weekdays = Value(weekdays),
+       wifiOnly = Value(wifiOnly),
+       chargingOnly = Value(chargingOnly),
+       retryHours = Value(retryHours);
+  static Insertable<ScheduleRow> custom({
+    Expression<int>? id,
+    Expression<bool>? enabled,
+    Expression<int>? hour,
+    Expression<int>? minute,
+    Expression<String>? weekdays,
+    Expression<bool>? wifiOnly,
+    Expression<bool>? chargingOnly,
+    Expression<int>? retryHours,
+    Expression<DateTime>? enabledAt,
+    Expression<DateTime>? lastAttemptAt,
+    Expression<String>? lastOutcome,
+    Expression<String>? lastMessage,
+    Expression<DateTime>? lastSuccessAt,
+    Expression<DateTime>? nextRunEstimate,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (enabled != null) 'enabled': enabled,
+      if (hour != null) 'hour': hour,
+      if (minute != null) 'minute': minute,
+      if (weekdays != null) 'weekdays': weekdays,
+      if (wifiOnly != null) 'wifi_only': wifiOnly,
+      if (chargingOnly != null) 'charging_only': chargingOnly,
+      if (retryHours != null) 'retry_hours': retryHours,
+      if (enabledAt != null) 'enabled_at': enabledAt,
+      if (lastAttemptAt != null) 'last_attempt_at': lastAttemptAt,
+      if (lastOutcome != null) 'last_outcome': lastOutcome,
+      if (lastMessage != null) 'last_message': lastMessage,
+      if (lastSuccessAt != null) 'last_success_at': lastSuccessAt,
+      if (nextRunEstimate != null) 'next_run_estimate': nextRunEstimate,
+    });
+  }
+
+  ScheduleSettingsTableCompanion copyWith({
+    Value<int>? id,
+    Value<bool>? enabled,
+    Value<int>? hour,
+    Value<int>? minute,
+    Value<String>? weekdays,
+    Value<bool>? wifiOnly,
+    Value<bool>? chargingOnly,
+    Value<int>? retryHours,
+    Value<DateTime?>? enabledAt,
+    Value<DateTime?>? lastAttemptAt,
+    Value<String?>? lastOutcome,
+    Value<String?>? lastMessage,
+    Value<DateTime?>? lastSuccessAt,
+    Value<DateTime?>? nextRunEstimate,
+  }) {
+    return ScheduleSettingsTableCompanion(
+      id: id ?? this.id,
+      enabled: enabled ?? this.enabled,
+      hour: hour ?? this.hour,
+      minute: minute ?? this.minute,
+      weekdays: weekdays ?? this.weekdays,
+      wifiOnly: wifiOnly ?? this.wifiOnly,
+      chargingOnly: chargingOnly ?? this.chargingOnly,
+      retryHours: retryHours ?? this.retryHours,
+      enabledAt: enabledAt ?? this.enabledAt,
+      lastAttemptAt: lastAttemptAt ?? this.lastAttemptAt,
+      lastOutcome: lastOutcome ?? this.lastOutcome,
+      lastMessage: lastMessage ?? this.lastMessage,
+      lastSuccessAt: lastSuccessAt ?? this.lastSuccessAt,
+      nextRunEstimate: nextRunEstimate ?? this.nextRunEstimate,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (enabled.present) {
+      map['enabled'] = Variable<bool>(enabled.value);
+    }
+    if (hour.present) {
+      map['hour'] = Variable<int>(hour.value);
+    }
+    if (minute.present) {
+      map['minute'] = Variable<int>(minute.value);
+    }
+    if (weekdays.present) {
+      map['weekdays'] = Variable<String>(weekdays.value);
+    }
+    if (wifiOnly.present) {
+      map['wifi_only'] = Variable<bool>(wifiOnly.value);
+    }
+    if (chargingOnly.present) {
+      map['charging_only'] = Variable<bool>(chargingOnly.value);
+    }
+    if (retryHours.present) {
+      map['retry_hours'] = Variable<int>(retryHours.value);
+    }
+    if (enabledAt.present) {
+      map['enabled_at'] = Variable<DateTime>(enabledAt.value);
+    }
+    if (lastAttemptAt.present) {
+      map['last_attempt_at'] = Variable<DateTime>(lastAttemptAt.value);
+    }
+    if (lastOutcome.present) {
+      map['last_outcome'] = Variable<String>(lastOutcome.value);
+    }
+    if (lastMessage.present) {
+      map['last_message'] = Variable<String>(lastMessage.value);
+    }
+    if (lastSuccessAt.present) {
+      map['last_success_at'] = Variable<DateTime>(lastSuccessAt.value);
+    }
+    if (nextRunEstimate.present) {
+      map['next_run_estimate'] = Variable<DateTime>(nextRunEstimate.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ScheduleSettingsTableCompanion(')
+          ..write('id: $id, ')
+          ..write('enabled: $enabled, ')
+          ..write('hour: $hour, ')
+          ..write('minute: $minute, ')
+          ..write('weekdays: $weekdays, ')
+          ..write('wifiOnly: $wifiOnly, ')
+          ..write('chargingOnly: $chargingOnly, ')
+          ..write('retryHours: $retryHours, ')
+          ..write('enabledAt: $enabledAt, ')
+          ..write('lastAttemptAt: $lastAttemptAt, ')
+          ..write('lastOutcome: $lastOutcome, ')
+          ..write('lastMessage: $lastMessage, ')
+          ..write('lastSuccessAt: $lastSuccessAt, ')
+          ..write('nextRunEstimate: $nextRunEstimate')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TransferLocksTable extends TransferLocks
+    with TableInfo<$TransferLocksTable, TransferLock> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TransferLocksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _ownerMeta = const VerificationMeta('owner');
+  @override
+  late final GeneratedColumn<String> owner = GeneratedColumn<String>(
+    'owner',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _expiresAtMillisMeta = const VerificationMeta(
+    'expiresAtMillis',
+  );
+  @override
+  late final GeneratedColumn<int> expiresAtMillis = GeneratedColumn<int>(
+    'expires_at_millis',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [name, owner, expiresAtMillis];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'transfer_locks';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TransferLock> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('owner')) {
+      context.handle(
+        _ownerMeta,
+        owner.isAcceptableOrUnknown(data['owner']!, _ownerMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ownerMeta);
+    }
+    if (data.containsKey('expires_at_millis')) {
+      context.handle(
+        _expiresAtMillisMeta,
+        expiresAtMillis.isAcceptableOrUnknown(
+          data['expires_at_millis']!,
+          _expiresAtMillisMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_expiresAtMillisMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {name};
+  @override
+  TransferLock map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TransferLock(
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      owner: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}owner'],
+      )!,
+      expiresAtMillis: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}expires_at_millis'],
+      )!,
+    );
+  }
+
+  @override
+  $TransferLocksTable createAlias(String alias) {
+    return $TransferLocksTable(attachedDatabase, alias);
+  }
+}
+
+class TransferLock extends DataClass implements Insertable<TransferLock> {
+  final String name;
+  final String owner;
+  final int expiresAtMillis;
+  const TransferLock({
+    required this.name,
+    required this.owner,
+    required this.expiresAtMillis,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['name'] = Variable<String>(name);
+    map['owner'] = Variable<String>(owner);
+    map['expires_at_millis'] = Variable<int>(expiresAtMillis);
+    return map;
+  }
+
+  TransferLocksCompanion toCompanion(bool nullToAbsent) {
+    return TransferLocksCompanion(
+      name: Value(name),
+      owner: Value(owner),
+      expiresAtMillis: Value(expiresAtMillis),
+    );
+  }
+
+  factory TransferLock.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TransferLock(
+      name: serializer.fromJson<String>(json['name']),
+      owner: serializer.fromJson<String>(json['owner']),
+      expiresAtMillis: serializer.fromJson<int>(json['expiresAtMillis']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'name': serializer.toJson<String>(name),
+      'owner': serializer.toJson<String>(owner),
+      'expiresAtMillis': serializer.toJson<int>(expiresAtMillis),
+    };
+  }
+
+  TransferLock copyWith({String? name, String? owner, int? expiresAtMillis}) =>
+      TransferLock(
+        name: name ?? this.name,
+        owner: owner ?? this.owner,
+        expiresAtMillis: expiresAtMillis ?? this.expiresAtMillis,
+      );
+  TransferLock copyWithCompanion(TransferLocksCompanion data) {
+    return TransferLock(
+      name: data.name.present ? data.name.value : this.name,
+      owner: data.owner.present ? data.owner.value : this.owner,
+      expiresAtMillis: data.expiresAtMillis.present
+          ? data.expiresAtMillis.value
+          : this.expiresAtMillis,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TransferLock(')
+          ..write('name: $name, ')
+          ..write('owner: $owner, ')
+          ..write('expiresAtMillis: $expiresAtMillis')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(name, owner, expiresAtMillis);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TransferLock &&
+          other.name == this.name &&
+          other.owner == this.owner &&
+          other.expiresAtMillis == this.expiresAtMillis);
+}
+
+class TransferLocksCompanion extends UpdateCompanion<TransferLock> {
+  final Value<String> name;
+  final Value<String> owner;
+  final Value<int> expiresAtMillis;
+  final Value<int> rowid;
+  const TransferLocksCompanion({
+    this.name = const Value.absent(),
+    this.owner = const Value.absent(),
+    this.expiresAtMillis = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TransferLocksCompanion.insert({
+    required String name,
+    required String owner,
+    required int expiresAtMillis,
+    this.rowid = const Value.absent(),
+  }) : name = Value(name),
+       owner = Value(owner),
+       expiresAtMillis = Value(expiresAtMillis);
+  static Insertable<TransferLock> custom({
+    Expression<String>? name,
+    Expression<String>? owner,
+    Expression<int>? expiresAtMillis,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (name != null) 'name': name,
+      if (owner != null) 'owner': owner,
+      if (expiresAtMillis != null) 'expires_at_millis': expiresAtMillis,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TransferLocksCompanion copyWith({
+    Value<String>? name,
+    Value<String>? owner,
+    Value<int>? expiresAtMillis,
+    Value<int>? rowid,
+  }) {
+    return TransferLocksCompanion(
+      name: name ?? this.name,
+      owner: owner ?? this.owner,
+      expiresAtMillis: expiresAtMillis ?? this.expiresAtMillis,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (owner.present) {
+      map['owner'] = Variable<String>(owner.value);
+    }
+    if (expiresAtMillis.present) {
+      map['expires_at_millis'] = Variable<int>(expiresAtMillis.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TransferLocksCompanion(')
+          ..write('name: $name, ')
+          ..write('owner: $owner, ')
+          ..write('expiresAtMillis: $expiresAtMillis, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2512,6 +3619,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $MediaItemsTable mediaItems = $MediaItemsTable(this);
   late final $PairedDevicesTable pairedDevices = $PairedDevicesTable(this);
   late final $ReceivedFilesTable receivedFiles = $ReceivedFilesTable(this);
+  late final $ScheduleSettingsTableTable scheduleSettingsTable =
+      $ScheduleSettingsTableTable(this);
+  late final $TransferLocksTable transferLocks = $TransferLocksTable(this);
   late final Index mediaItemsStatus = Index(
     'media_items_status',
     'CREATE INDEX media_items_status ON media_items (status)',
@@ -2537,6 +3647,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     mediaItems,
     pairedDevices,
     receivedFiles,
+    scheduleSettingsTable,
+    transferLocks,
     mediaItemsStatus,
     mediaItemsSourceMediaId,
     receivedFilesTransferId,
@@ -3749,6 +4861,582 @@ typedef $$ReceivedFilesTableProcessedTableManager =
       ReceivedFile,
       PrefetchHooks Function()
     >;
+typedef $$ScheduleSettingsTableTableCreateCompanionBuilder =
+    ScheduleSettingsTableCompanion Function({
+      Value<int> id,
+      required bool enabled,
+      required int hour,
+      required int minute,
+      required String weekdays,
+      required bool wifiOnly,
+      required bool chargingOnly,
+      required int retryHours,
+      Value<DateTime?> enabledAt,
+      Value<DateTime?> lastAttemptAt,
+      Value<String?> lastOutcome,
+      Value<String?> lastMessage,
+      Value<DateTime?> lastSuccessAt,
+      Value<DateTime?> nextRunEstimate,
+    });
+typedef $$ScheduleSettingsTableTableUpdateCompanionBuilder =
+    ScheduleSettingsTableCompanion Function({
+      Value<int> id,
+      Value<bool> enabled,
+      Value<int> hour,
+      Value<int> minute,
+      Value<String> weekdays,
+      Value<bool> wifiOnly,
+      Value<bool> chargingOnly,
+      Value<int> retryHours,
+      Value<DateTime?> enabledAt,
+      Value<DateTime?> lastAttemptAt,
+      Value<String?> lastOutcome,
+      Value<String?> lastMessage,
+      Value<DateTime?> lastSuccessAt,
+      Value<DateTime?> nextRunEstimate,
+    });
+
+class $$ScheduleSettingsTableTableFilterComposer
+    extends Composer<_$AppDatabase, $ScheduleSettingsTableTable> {
+  $$ScheduleSettingsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get enabled => $composableBuilder(
+    column: $table.enabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get hour => $composableBuilder(
+    column: $table.hour,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get minute => $composableBuilder(
+    column: $table.minute,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get weekdays => $composableBuilder(
+    column: $table.weekdays,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get wifiOnly => $composableBuilder(
+    column: $table.wifiOnly,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get chargingOnly => $composableBuilder(
+    column: $table.chargingOnly,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get retryHours => $composableBuilder(
+    column: $table.retryHours,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get enabledAt => $composableBuilder(
+    column: $table.enabledAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastAttemptAt => $composableBuilder(
+    column: $table.lastAttemptAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastOutcome => $composableBuilder(
+    column: $table.lastOutcome,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastMessage => $composableBuilder(
+    column: $table.lastMessage,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastSuccessAt => $composableBuilder(
+    column: $table.lastSuccessAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get nextRunEstimate => $composableBuilder(
+    column: $table.nextRunEstimate,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ScheduleSettingsTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $ScheduleSettingsTableTable> {
+  $$ScheduleSettingsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get enabled => $composableBuilder(
+    column: $table.enabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get hour => $composableBuilder(
+    column: $table.hour,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get minute => $composableBuilder(
+    column: $table.minute,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get weekdays => $composableBuilder(
+    column: $table.weekdays,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get wifiOnly => $composableBuilder(
+    column: $table.wifiOnly,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get chargingOnly => $composableBuilder(
+    column: $table.chargingOnly,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get retryHours => $composableBuilder(
+    column: $table.retryHours,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get enabledAt => $composableBuilder(
+    column: $table.enabledAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastAttemptAt => $composableBuilder(
+    column: $table.lastAttemptAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastOutcome => $composableBuilder(
+    column: $table.lastOutcome,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastMessage => $composableBuilder(
+    column: $table.lastMessage,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastSuccessAt => $composableBuilder(
+    column: $table.lastSuccessAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get nextRunEstimate => $composableBuilder(
+    column: $table.nextRunEstimate,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ScheduleSettingsTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ScheduleSettingsTableTable> {
+  $$ScheduleSettingsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<bool> get enabled =>
+      $composableBuilder(column: $table.enabled, builder: (column) => column);
+
+  GeneratedColumn<int> get hour =>
+      $composableBuilder(column: $table.hour, builder: (column) => column);
+
+  GeneratedColumn<int> get minute =>
+      $composableBuilder(column: $table.minute, builder: (column) => column);
+
+  GeneratedColumn<String> get weekdays =>
+      $composableBuilder(column: $table.weekdays, builder: (column) => column);
+
+  GeneratedColumn<bool> get wifiOnly =>
+      $composableBuilder(column: $table.wifiOnly, builder: (column) => column);
+
+  GeneratedColumn<bool> get chargingOnly => $composableBuilder(
+    column: $table.chargingOnly,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get retryHours => $composableBuilder(
+    column: $table.retryHours,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get enabledAt =>
+      $composableBuilder(column: $table.enabledAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastAttemptAt => $composableBuilder(
+    column: $table.lastAttemptAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastOutcome => $composableBuilder(
+    column: $table.lastOutcome,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastMessage => $composableBuilder(
+    column: $table.lastMessage,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastSuccessAt => $composableBuilder(
+    column: $table.lastSuccessAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get nextRunEstimate => $composableBuilder(
+    column: $table.nextRunEstimate,
+    builder: (column) => column,
+  );
+}
+
+class $$ScheduleSettingsTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ScheduleSettingsTableTable,
+          ScheduleRow,
+          $$ScheduleSettingsTableTableFilterComposer,
+          $$ScheduleSettingsTableTableOrderingComposer,
+          $$ScheduleSettingsTableTableAnnotationComposer,
+          $$ScheduleSettingsTableTableCreateCompanionBuilder,
+          $$ScheduleSettingsTableTableUpdateCompanionBuilder,
+          (
+            ScheduleRow,
+            BaseReferences<
+              _$AppDatabase,
+              $ScheduleSettingsTableTable,
+              ScheduleRow
+            >,
+          ),
+          ScheduleRow,
+          PrefetchHooks Function()
+        > {
+  $$ScheduleSettingsTableTableTableManager(
+    _$AppDatabase db,
+    $ScheduleSettingsTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ScheduleSettingsTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$ScheduleSettingsTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$ScheduleSettingsTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<bool> enabled = const Value.absent(),
+                Value<int> hour = const Value.absent(),
+                Value<int> minute = const Value.absent(),
+                Value<String> weekdays = const Value.absent(),
+                Value<bool> wifiOnly = const Value.absent(),
+                Value<bool> chargingOnly = const Value.absent(),
+                Value<int> retryHours = const Value.absent(),
+                Value<DateTime?> enabledAt = const Value.absent(),
+                Value<DateTime?> lastAttemptAt = const Value.absent(),
+                Value<String?> lastOutcome = const Value.absent(),
+                Value<String?> lastMessage = const Value.absent(),
+                Value<DateTime?> lastSuccessAt = const Value.absent(),
+                Value<DateTime?> nextRunEstimate = const Value.absent(),
+              }) => ScheduleSettingsTableCompanion(
+                id: id,
+                enabled: enabled,
+                hour: hour,
+                minute: minute,
+                weekdays: weekdays,
+                wifiOnly: wifiOnly,
+                chargingOnly: chargingOnly,
+                retryHours: retryHours,
+                enabledAt: enabledAt,
+                lastAttemptAt: lastAttemptAt,
+                lastOutcome: lastOutcome,
+                lastMessage: lastMessage,
+                lastSuccessAt: lastSuccessAt,
+                nextRunEstimate: nextRunEstimate,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required bool enabled,
+                required int hour,
+                required int minute,
+                required String weekdays,
+                required bool wifiOnly,
+                required bool chargingOnly,
+                required int retryHours,
+                Value<DateTime?> enabledAt = const Value.absent(),
+                Value<DateTime?> lastAttemptAt = const Value.absent(),
+                Value<String?> lastOutcome = const Value.absent(),
+                Value<String?> lastMessage = const Value.absent(),
+                Value<DateTime?> lastSuccessAt = const Value.absent(),
+                Value<DateTime?> nextRunEstimate = const Value.absent(),
+              }) => ScheduleSettingsTableCompanion.insert(
+                id: id,
+                enabled: enabled,
+                hour: hour,
+                minute: minute,
+                weekdays: weekdays,
+                wifiOnly: wifiOnly,
+                chargingOnly: chargingOnly,
+                retryHours: retryHours,
+                enabledAt: enabledAt,
+                lastAttemptAt: lastAttemptAt,
+                lastOutcome: lastOutcome,
+                lastMessage: lastMessage,
+                lastSuccessAt: lastSuccessAt,
+                nextRunEstimate: nextRunEstimate,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ScheduleSettingsTableTable, ScheduleRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $ScheduleSettingsTableTable,
+                    ScheduleRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ScheduleSettingsTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ScheduleSettingsTableTable,
+      ScheduleRow,
+      $$ScheduleSettingsTableTableFilterComposer,
+      $$ScheduleSettingsTableTableOrderingComposer,
+      $$ScheduleSettingsTableTableAnnotationComposer,
+      $$ScheduleSettingsTableTableCreateCompanionBuilder,
+      $$ScheduleSettingsTableTableUpdateCompanionBuilder,
+      (
+        ScheduleRow,
+        BaseReferences<_$AppDatabase, $ScheduleSettingsTableTable, ScheduleRow>,
+      ),
+      ScheduleRow,
+      PrefetchHooks Function()
+    >;
+typedef $$TransferLocksTableCreateCompanionBuilder =
+    TransferLocksCompanion Function({
+      required String name,
+      required String owner,
+      required int expiresAtMillis,
+      Value<int> rowid,
+    });
+typedef $$TransferLocksTableUpdateCompanionBuilder =
+    TransferLocksCompanion Function({
+      Value<String> name,
+      Value<String> owner,
+      Value<int> expiresAtMillis,
+      Value<int> rowid,
+    });
+
+class $$TransferLocksTableFilterComposer
+    extends Composer<_$AppDatabase, $TransferLocksTable> {
+  $$TransferLocksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get owner => $composableBuilder(
+    column: $table.owner,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get expiresAtMillis => $composableBuilder(
+    column: $table.expiresAtMillis,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$TransferLocksTableOrderingComposer
+    extends Composer<_$AppDatabase, $TransferLocksTable> {
+  $$TransferLocksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get owner => $composableBuilder(
+    column: $table.owner,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get expiresAtMillis => $composableBuilder(
+    column: $table.expiresAtMillis,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$TransferLocksTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TransferLocksTable> {
+  $$TransferLocksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get owner =>
+      $composableBuilder(column: $table.owner, builder: (column) => column);
+
+  GeneratedColumn<int> get expiresAtMillis => $composableBuilder(
+    column: $table.expiresAtMillis,
+    builder: (column) => column,
+  );
+}
+
+class $$TransferLocksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TransferLocksTable,
+          TransferLock,
+          $$TransferLocksTableFilterComposer,
+          $$TransferLocksTableOrderingComposer,
+          $$TransferLocksTableAnnotationComposer,
+          $$TransferLocksTableCreateCompanionBuilder,
+          $$TransferLocksTableUpdateCompanionBuilder,
+          (
+            TransferLock,
+            BaseReferences<_$AppDatabase, $TransferLocksTable, TransferLock>,
+          ),
+          TransferLock,
+          PrefetchHooks Function()
+        > {
+  $$TransferLocksTableTableManager(_$AppDatabase db, $TransferLocksTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TransferLocksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TransferLocksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TransferLocksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> name = const Value.absent(),
+                Value<String> owner = const Value.absent(),
+                Value<int> expiresAtMillis = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TransferLocksCompanion(
+                name: name,
+                owner: owner,
+                expiresAtMillis: expiresAtMillis,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String name,
+                required String owner,
+                required int expiresAtMillis,
+                Value<int> rowid = const Value.absent(),
+              }) => TransferLocksCompanion.insert(
+                name: name,
+                owner: owner,
+                expiresAtMillis: expiresAtMillis,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$TransferLocksTable, TransferLock>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $TransferLocksTable,
+                    TransferLock
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$TransferLocksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TransferLocksTable,
+      TransferLock,
+      $$TransferLocksTableFilterComposer,
+      $$TransferLocksTableOrderingComposer,
+      $$TransferLocksTableAnnotationComposer,
+      $$TransferLocksTableCreateCompanionBuilder,
+      $$TransferLocksTableUpdateCompanionBuilder,
+      (
+        TransferLock,
+        BaseReferences<_$AppDatabase, $TransferLocksTable, TransferLock>,
+      ),
+      TransferLock,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3761,4 +5449,8 @@ class $AppDatabaseManager {
       $$PairedDevicesTableTableManager(_db, _db.pairedDevices);
   $$ReceivedFilesTableTableManager get receivedFiles =>
       $$ReceivedFilesTableTableManager(_db, _db.receivedFiles);
+  $$ScheduleSettingsTableTableTableManager get scheduleSettingsTable =>
+      $$ScheduleSettingsTableTableTableManager(_db, _db.scheduleSettingsTable);
+  $$TransferLocksTableTableManager get transferLocks =>
+      $$TransferLocksTableTableManager(_db, _db.transferLocks);
 }

@@ -94,3 +94,42 @@ class ReceivedFiles extends Table {
   TextColumn get acknowledgementId => text()();
   DateTimeColumn get receivedAt => dateTime()();
 }
+
+/// The daily schedule and its last run (plan §9, §11). A single row, id 1.
+@DataClassName('ScheduleRow')
+class ScheduleSettingsTable extends Table {
+  @override
+  String get tableName => 'schedule_settings';
+
+  IntColumn get id => integer()();
+  BoolColumn get enabled => boolean()();
+  IntColumn get hour => integer()();
+  IntColumn get minute => integer()();
+
+  /// ISO weekdays as "1,2,3".
+  TextColumn get weekdays => text()();
+  BoolColumn get wifiOnly => boolean()();
+  BoolColumn get chargingOnly => boolean()();
+  IntColumn get retryHours => integer()();
+  DateTimeColumn get enabledAt => dateTime().nullable()();
+  DateTimeColumn get lastAttemptAt => dateTime().nullable()();
+  TextColumn get lastOutcome => text().nullable()();
+  TextColumn get lastMessage => text().nullable()();
+  DateTimeColumn get lastSuccessAt => dateTime().nullable()();
+  DateTimeColumn get nextRunEstimate => dateTime().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// A lease that keeps a scheduled run and a manual transfer from running
+/// at once. The scheduled run uses its own Flutter engine and database
+/// connection, so an in-memory flag can't do this.
+class TransferLocks extends Table {
+  TextColumn get name => text()();
+  TextColumn get owner => text()();
+  IntColumn get expiresAtMillis => integer()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {name};
+}

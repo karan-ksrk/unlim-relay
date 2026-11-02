@@ -45,7 +45,7 @@ The sender marks an item **transferred** only on `fileAck` (or
 
 Default **100 photos and 5 videos per day**, editable in Settings (either
 can be "no limit"). Counted from local midnight by `transferredAt`, applies
-to *Transfer now*, *Transfer selected* and (later) scheduled runs. Pending
+to *Transfer now*, *Transfer selected* and scheduled runs. Pending
 items are sent newest first; the rest wait for the next day.
 
 When files are waiting because of the limit, the transfer screen offers
@@ -70,5 +70,6 @@ can trigger it; scheduled runs always respect the limit. Going over shows as
 - `photo_manager` doesn't use `IS_PENDING`, so the gallery could briefly see
   the file while its (already verified) bytes are copied in.
 - No proactive free-space check; a full disk is reported when a write fails.
-- Both apps must stay open; the screen is kept on during a transfer and
-  while *Ready to receive* is on.
+- *Transfer now* keeps the sender's screen on while it runs; scheduled runs
+  work in the background. The receiver keeps listening with its screen off
+  ([receiver.md](receiver.md)).

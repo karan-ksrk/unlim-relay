@@ -49,9 +49,11 @@ SHA-256 — never GPS.
 
 ## Limits
 
-- The receiver must have LumaSync open with *Ready to receive* on (plan §2.3
-  MVP). The switch is remembered: reopening the app (or an update) resumes
-  listening automatically. Background receiving is evaluated later.
+- The receiver needs *Ready to receive* on. It keeps listening with the
+  screen off or the app in the background (a foreground service, see
+  [receiver.md](receiver.md)), but not after the app is swiped away from
+  recents or force-stopped. The switch is remembered: reopening the app (or
+  an update) resumes listening automatically.
 - A refused connection (receiver app closed or switch off) gets its own
   message telling the user to turn on *Ready to receive*.
 - One paired peer per phone; pairing again replaces it.

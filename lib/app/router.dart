@@ -11,6 +11,7 @@ import '../features/onboarding/role_selection_screen.dart';
 import '../features/onboarding/welcome_screen.dart';
 import '../features/pairing/pairing_screen.dart';
 import '../features/pairing/qr_scanner_screen.dart';
+import '../features/schedule/schedule_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/transfer/transfer_screen.dart';
 
@@ -23,6 +24,7 @@ abstract final class AppRoutes {
   static const pair = '/pair';
   static const pairScan = '/pair/scan';
   static const transfer = '/transfer';
+  static const schedule = '/schedule';
 
   static String libraryTab(LibraryTab tab) =>
       Uri(path: library, queryParameters: {'tab': tab.name}).toString();
@@ -84,6 +86,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.transfer,
         builder: (context, state) => const TransferScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.schedule,
+        builder: (context, state) => const ScheduleScreen(),
       ),
       GoRoute(
         path: AppRoutes.settings,

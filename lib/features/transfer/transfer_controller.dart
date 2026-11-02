@@ -3,6 +3,7 @@ import 'package:logging/logging.dart';
 
 import '../../data/models/transfer_limits.dart';
 import '../../data/providers.dart';
+import '../../data/repositories/transfer_lock_repository.dart';
 import '../../services/daily_limits.dart';
 import '../../services/transfer_errors.dart';
 import '../../services/transfer_orchestrator.dart';
@@ -70,17 +71,24 @@ class TransferController extends Notifier<TransferState> {
     final wakeLock = ref.read(screenWakeLockProvider);
     await _quietly(wakeLock.enable);
     try {
+      // The lock keeps this from overlapping a scheduled run in the
+      // background engine.
       final summary = await ref
-          .read(transferOrchestratorProvider)
-          .run(
-            itemIds: itemIds,
-            extraBatch: extraBatch,
-            onProgress: (progress) => state = TransferState(
-              phase: TransferPhase.running,
-              progress: progress,
-              cancelling: _cancelRequested,
-            ),
-            isCancelled: () => _cancelRequested,
+          .read(transferLockRepositoryProvider)
+          .whileHolding(
+            TransferLockOwner.app,
+            () => ref
+                .read(transferOrchestratorProvider)
+                .run(
+                  itemIds: itemIds,
+                  extraBatch: extraBatch,
+                  onProgress: (progress) => state = TransferState(
+                    phase: TransferPhase.running,
+                    progress: progress,
+                    cancelling: _cancelRequested,
+                  ),
+                  isCancelled: () => _cancelRequested,
+                ),
           );
       state = TransferState(
         phase: TransferPhase.done,
