@@ -5,6 +5,7 @@ import 'package:lumasync/data/database/app_database.dart';
 import 'package:lumasync/data/models/device_role.dart';
 import 'package:lumasync/data/models/media_enums.dart';
 import 'package:lumasync/data/plugin_adapters/media_library.dart';
+import 'package:lumasync/data/repositories/media_inventory_repository.dart';
 import 'package:lumasync/features/media_library/media_thumbnail.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -89,5 +90,53 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.textContaining('Nothing transferred yet'), findsOneWidget);
+  });
+
+  testWidgets('transferred files can be selected and deleted', (tester) async {
+    final library = FakeMediaLibrary(
+      media: [
+        scanned('1', size: 1024 * 1024),
+        scanned('2'),
+      ],
+    );
+    await pumpSender(tester, library);
+    await tester.tap(find.text('Scan camera library'));
+    await tester.pumpAndSettle();
+    final inventory = DriftMediaInventoryRepository(db);
+    for (final item in await inventory.allItems()) {
+      if (item.sourceMediaId == '1') {
+        await inventory.markTransferred(
+          item.id,
+          sha256: 'abc',
+          acknowledgementId: 'ack',
+          at: DateTime(2026, 11, 3),
+        );
+      }
+    }
+
+    await tester.tap(find.text('Transferred'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Transferred (1)'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Long-press to select'), findsOneWidget);
+
+    await tester.longPress(find.byType(MediaThumbnail));
+    await tester.pumpAndSettle();
+    expect(find.text('1 selected'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Delete from this phone'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Delete 1 transferred file (1.0 MB) from this phone?'),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
+    await tester.pumpAndSettle();
+
+    expect(library.deleted, ['1']);
+    expect(find.textContaining('Deleted 1 file'), findsOneWidget);
+    expect(find.text('Transferred (0)'), findsOneWidget);
+    expect(find.textContaining('Freed so far: 1.0 MB'), findsOneWidget);
   });
 }

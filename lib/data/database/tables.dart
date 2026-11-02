@@ -45,6 +45,11 @@ class MediaItems extends Table {
   /// Set when the file is no longer in the media library. The row stays as
   /// history and is never deleted automatically.
   DateTimeColumn get removedFromLibraryAt => dateTime().nullable()();
+
+  /// Set when the user deleted the original from this phone after a
+  /// verified transfer (plan §10). The row stays as a tombstone so a
+  /// lagging media index can't bring the file back as pending.
+  DateTimeColumn get deletedAt => dateTime().nullable()();
 }
 
 /// The trusted peer (plan §7 and §11). Unpairing deletes the row.

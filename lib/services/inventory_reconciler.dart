@@ -13,11 +13,26 @@ import '../data/repositories/media_inventory_repository.dart';
 /// - Files that left the library are marked removed but kept as history.
 /// - A file whose MediaStore id changed (restore, re-index) is matched by
 ///   name, size and capture time so its status is kept.
+/// - Files the user deleted after transfer stay tombstones: if a lagging
+///   media index still lists one, it is ignored, never re-added.
 InventoryChanges reconcileInventory({
   required List<MediaItem> existing,
   required List<ScannedMedia> scanned,
   required DateTime now,
 }) {
+  final tombstoneIds = {
+    for (final item in existing)
+      if (item.deletedAt != null) item.sourceMediaId,
+  };
+  existing = [
+    for (final item in existing)
+      if (item.deletedAt == null) item,
+  ];
+  scanned = [
+    for (final media in scanned)
+      if (!tombstoneIds.contains(media.sourceMediaId)) media,
+  ];
+
   final byId = <String, MediaItem>{};
   for (final item in existing) {
     final current = byId[item.sourceMediaId];

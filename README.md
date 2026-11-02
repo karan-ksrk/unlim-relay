@@ -45,7 +45,12 @@ for the full plan.
   chime synthesized by `tool/generate_launch_sound.py`, muted in silent or
   vibrate mode and switchable in Settings. See [docs/brand.md](docs/brand.md).
 
-Manual cleanup and hardening (Milestone 7) are next. See [docs/schedule.md](docs/schedule.md),
+- **Milestone 7** (cleanup and hardening, in progress): delete verified,
+  unchanged transferred originals from the sender after two confirmations
+  (the app's, then Android's), tombstones so deleted files never return as
+  pending (schema v6), Select all, Retry all, release signing and
+  per-ABI release APKs. See [docs/cleanup.md](docs/cleanup.md) and
+  [docs/release.md](docs/release.md). See [docs/schedule.md](docs/schedule.md),
 [docs/transfer.md](docs/transfer.md),
 [docs/pairing.md](docs/pairing.md),
 [docs/device-compatibility.md](docs/device-compatibility.md) and

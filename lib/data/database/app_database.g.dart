@@ -389,6 +389,17 @@ class $MediaItemsTable extends MediaItems
         type: DriftSqlType.dateTime,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -407,6 +418,7 @@ class $MediaItemsTable extends MediaItems
     receiverAcknowledgementId,
     lastError,
     removedFromLibraryAt,
+    deletedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -540,6 +552,12 @@ class $MediaItemsTable extends MediaItems
         ),
       );
     }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
     return context;
   }
 
@@ -617,6 +635,10 @@ class $MediaItemsTable extends MediaItems
         DriftSqlType.dateTime,
         data['${effectivePrefix}removed_from_library_at'],
       ),
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
     );
   }
 
@@ -657,6 +679,11 @@ class MediaItem extends DataClass implements Insertable<MediaItem> {
   /// Set when the file is no longer in the media library. The row stays as
   /// history and is never deleted automatically.
   final DateTime? removedFromLibraryAt;
+
+  /// Set when the user deleted the original from this phone after a
+  /// verified transfer (plan §10). The row stays as a tombstone so a
+  /// lagging media index can't bring the file back as pending.
+  final DateTime? deletedAt;
   const MediaItem({
     required this.id,
     required this.sourceMediaId,
@@ -674,6 +701,7 @@ class MediaItem extends DataClass implements Insertable<MediaItem> {
     this.receiverAcknowledgementId,
     this.lastError,
     this.removedFromLibraryAt,
+    this.deletedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -718,6 +746,9 @@ class MediaItem extends DataClass implements Insertable<MediaItem> {
     if (!nullToAbsent || removedFromLibraryAt != null) {
       map['removed_from_library_at'] = Variable<DateTime>(removedFromLibraryAt);
     }
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
     return map;
   }
 
@@ -754,6 +785,9 @@ class MediaItem extends DataClass implements Insertable<MediaItem> {
       removedFromLibraryAt: removedFromLibraryAt == null && nullToAbsent
           ? const Value.absent()
           : Value(removedFromLibraryAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
     );
   }
 
@@ -787,6 +821,7 @@ class MediaItem extends DataClass implements Insertable<MediaItem> {
       removedFromLibraryAt: serializer.fromJson<DateTime?>(
         json['removedFromLibraryAt'],
       ),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
     );
   }
   @override
@@ -817,6 +852,7 @@ class MediaItem extends DataClass implements Insertable<MediaItem> {
       'removedFromLibraryAt': serializer.toJson<DateTime?>(
         removedFromLibraryAt,
       ),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
     };
   }
 
@@ -837,6 +873,7 @@ class MediaItem extends DataClass implements Insertable<MediaItem> {
     Value<String?> receiverAcknowledgementId = const Value.absent(),
     Value<String?> lastError = const Value.absent(),
     Value<DateTime?> removedFromLibraryAt = const Value.absent(),
+    Value<DateTime?> deletedAt = const Value.absent(),
   }) => MediaItem(
     id: id ?? this.id,
     sourceMediaId: sourceMediaId ?? this.sourceMediaId,
@@ -862,6 +899,7 @@ class MediaItem extends DataClass implements Insertable<MediaItem> {
     removedFromLibraryAt: removedFromLibraryAt.present
         ? removedFromLibraryAt.value
         : this.removedFromLibraryAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
   );
   MediaItem copyWithCompanion(MediaItemsCompanion data) {
     return MediaItem(
@@ -899,6 +937,7 @@ class MediaItem extends DataClass implements Insertable<MediaItem> {
       removedFromLibraryAt: data.removedFromLibraryAt.present
           ? data.removedFromLibraryAt.value
           : this.removedFromLibraryAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
     );
   }
 
@@ -920,7 +959,8 @@ class MediaItem extends DataClass implements Insertable<MediaItem> {
           ..write('transferredAt: $transferredAt, ')
           ..write('receiverAcknowledgementId: $receiverAcknowledgementId, ')
           ..write('lastError: $lastError, ')
-          ..write('removedFromLibraryAt: $removedFromLibraryAt')
+          ..write('removedFromLibraryAt: $removedFromLibraryAt, ')
+          ..write('deletedAt: $deletedAt')
           ..write(')'))
         .toString();
   }
@@ -943,6 +983,7 @@ class MediaItem extends DataClass implements Insertable<MediaItem> {
     receiverAcknowledgementId,
     lastError,
     removedFromLibraryAt,
+    deletedAt,
   );
   @override
   bool operator ==(Object other) =>
@@ -963,7 +1004,8 @@ class MediaItem extends DataClass implements Insertable<MediaItem> {
           other.transferredAt == this.transferredAt &&
           other.receiverAcknowledgementId == this.receiverAcknowledgementId &&
           other.lastError == this.lastError &&
-          other.removedFromLibraryAt == this.removedFromLibraryAt);
+          other.removedFromLibraryAt == this.removedFromLibraryAt &&
+          other.deletedAt == this.deletedAt);
 }
 
 class MediaItemsCompanion extends UpdateCompanion<MediaItem> {
@@ -983,6 +1025,7 @@ class MediaItemsCompanion extends UpdateCompanion<MediaItem> {
   final Value<String?> receiverAcknowledgementId;
   final Value<String?> lastError;
   final Value<DateTime?> removedFromLibraryAt;
+  final Value<DateTime?> deletedAt;
   const MediaItemsCompanion({
     this.id = const Value.absent(),
     this.sourceMediaId = const Value.absent(),
@@ -1000,6 +1043,7 @@ class MediaItemsCompanion extends UpdateCompanion<MediaItem> {
     this.receiverAcknowledgementId = const Value.absent(),
     this.lastError = const Value.absent(),
     this.removedFromLibraryAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
   });
   MediaItemsCompanion.insert({
     this.id = const Value.absent(),
@@ -1018,6 +1062,7 @@ class MediaItemsCompanion extends UpdateCompanion<MediaItem> {
     this.receiverAcknowledgementId = const Value.absent(),
     this.lastError = const Value.absent(),
     this.removedFromLibraryAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
   }) : sourceMediaId = Value(sourceMediaId),
        displayName = Value(displayName),
        mimeType = Value(mimeType),
@@ -1043,6 +1088,7 @@ class MediaItemsCompanion extends UpdateCompanion<MediaItem> {
     Expression<String>? receiverAcknowledgementId,
     Expression<String>? lastError,
     Expression<DateTime>? removedFromLibraryAt,
+    Expression<DateTime>? deletedAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1064,6 +1110,7 @@ class MediaItemsCompanion extends UpdateCompanion<MediaItem> {
       if (lastError != null) 'last_error': lastError,
       if (removedFromLibraryAt != null)
         'removed_from_library_at': removedFromLibraryAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
     });
   }
 
@@ -1084,6 +1131,7 @@ class MediaItemsCompanion extends UpdateCompanion<MediaItem> {
     Value<String?>? receiverAcknowledgementId,
     Value<String?>? lastError,
     Value<DateTime?>? removedFromLibraryAt,
+    Value<DateTime?>? deletedAt,
   }) {
     return MediaItemsCompanion(
       id: id ?? this.id,
@@ -1103,6 +1151,7 @@ class MediaItemsCompanion extends UpdateCompanion<MediaItem> {
           receiverAcknowledgementId ?? this.receiverAcknowledgementId,
       lastError: lastError ?? this.lastError,
       removedFromLibraryAt: removedFromLibraryAt ?? this.removedFromLibraryAt,
+      deletedAt: deletedAt ?? this.deletedAt,
     );
   }
 
@@ -1165,6 +1214,9 @@ class MediaItemsCompanion extends UpdateCompanion<MediaItem> {
         removedFromLibraryAt.value,
       );
     }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
     return map;
   }
 
@@ -1186,7 +1238,8 @@ class MediaItemsCompanion extends UpdateCompanion<MediaItem> {
           ..write('transferredAt: $transferredAt, ')
           ..write('receiverAcknowledgementId: $receiverAcknowledgementId, ')
           ..write('lastError: $lastError, ')
-          ..write('removedFromLibraryAt: $removedFromLibraryAt')
+          ..write('removedFromLibraryAt: $removedFromLibraryAt, ')
+          ..write('deletedAt: $deletedAt')
           ..write(')'))
         .toString();
   }
@@ -3820,6 +3873,7 @@ typedef $$MediaItemsTableCreateCompanionBuilder = MediaItemsCompanion Function({
   Value<String?> receiverAcknowledgementId,
   Value<String?> lastError,
   Value<DateTime?> removedFromLibraryAt,
+  Value<DateTime?> deletedAt,
 });
 typedef $$MediaItemsTableUpdateCompanionBuilder = MediaItemsCompanion Function({
   Value<int> id,
@@ -3838,6 +3892,7 @@ typedef $$MediaItemsTableUpdateCompanionBuilder = MediaItemsCompanion Function({
   Value<String?> receiverAcknowledgementId,
   Value<String?> lastError,
   Value<DateTime?> removedFromLibraryAt,
+  Value<DateTime?> deletedAt,
 });
 
 class $$MediaItemsTableFilterComposer
@@ -3930,6 +3985,11 @@ class $$MediaItemsTableFilterComposer
     column: $table.removedFromLibraryAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$MediaItemsTableOrderingComposer
@@ -4020,6 +4080,11 @@ class $$MediaItemsTableOrderingComposer
     column: $table.removedFromLibraryAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$MediaItemsTableAnnotationComposer
@@ -4096,6 +4161,9 @@ class $$MediaItemsTableAnnotationComposer
     column: $table.removedFromLibraryAt,
     builder: (column) => column,
   );
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 }
 
 class $$MediaItemsTableTableManager
@@ -4145,6 +4213,7 @@ class $$MediaItemsTableTableManager
                 Value<String?> receiverAcknowledgementId = const Value.absent(),
                 Value<String?> lastError = const Value.absent(),
                 Value<DateTime?> removedFromLibraryAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
               }) => MediaItemsCompanion(
                 id: id,
                 sourceMediaId: sourceMediaId,
@@ -4162,6 +4231,7 @@ class $$MediaItemsTableTableManager
                 receiverAcknowledgementId: receiverAcknowledgementId,
                 lastError: lastError,
                 removedFromLibraryAt: removedFromLibraryAt,
+                deletedAt: deletedAt,
               ),
           createCompanionCallback:
               ({
@@ -4181,6 +4251,7 @@ class $$MediaItemsTableTableManager
                 Value<String?> receiverAcknowledgementId = const Value.absent(),
                 Value<String?> lastError = const Value.absent(),
                 Value<DateTime?> removedFromLibraryAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
               }) => MediaItemsCompanion.insert(
                 id: id,
                 sourceMediaId: sourceMediaId,
@@ -4198,6 +4269,7 @@ class $$MediaItemsTableTableManager
                 receiverAcknowledgementId: receiverAcknowledgementId,
                 lastError: lastError,
                 removedFromLibraryAt: removedFromLibraryAt,
+                deletedAt: deletedAt,
               ),
           withReferenceMapper: (p0) => p0
               .map(

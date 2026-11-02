@@ -60,4 +60,12 @@ abstract interface class MediaLibrary {
   /// The original file, read with location metadata intact, or `null` if it
   /// no longer exists.
   Future<File?> originalFile(String sourceMediaId);
+
+  /// The file as the library describes it now, or `null` if it is gone.
+  Future<ScannedMedia?> describe(String sourceMediaId);
+
+  /// Asks Android to delete these originals. Android shows its own
+  /// confirmation; the result holds only the ids actually deleted (none if
+  /// the user declined).
+  Future<List<String>> delete(List<String> sourceMediaIds);
 }

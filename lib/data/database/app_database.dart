@@ -43,8 +43,9 @@ class AppDatabase extends _$AppDatabase {
 
   /// v1: app_settings. v2: media_items. v3: paired_devices.
   /// v4: received_files. v5: schedule_settings, transfer_locks.
+  /// v6: media_items.deleted_at.
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -66,6 +67,10 @@ class AppDatabase extends _$AppDatabase {
       if (from < 5) {
         await m.createTable(scheduleSettingsTable);
         await m.createTable(transferLocks);
+      }
+      // A v1 database got media_items with every column in step 2.
+      if (from >= 2 && from < 6) {
+        await m.addColumn(mediaItems, mediaItems.deletedAt);
       }
     },
   );

@@ -42,6 +42,7 @@ MediaItem storedItem(
   DateTime? transferredAt,
   String? ackId,
   DateTime? removedAt,
+  DateTime? deletedAt,
 }) => MediaItem(
   id: id,
   sourceMediaId: media.sourceMediaId,
@@ -59,6 +60,7 @@ MediaItem storedItem(
   receiverAcknowledgementId: ackId,
   lastError: null,
   removedFromLibraryAt: removedAt,
+  deletedAt: deletedAt,
 );
 
 /// Scriptable [MediaLibrary] for tests.
@@ -105,4 +107,25 @@ class FakeMediaLibrary implements MediaLibrary {
   @override
   Future<File?> originalFile(String sourceMediaId) async =>
       files[sourceMediaId];
+
+  /// Ids Android "deleted"; set [declineDeletes] to simulate the user
+  /// refusing the system prompt.
+  final deleted = <String>[];
+  bool declineDeletes = false;
+
+  @override
+  Future<ScannedMedia?> describe(String sourceMediaId) async {
+    for (final item in media) {
+      if (item.sourceMediaId == sourceMediaId) return item;
+    }
+    return null;
+  }
+
+  @override
+  Future<List<String>> delete(List<String> sourceMediaIds) async {
+    if (declineDeletes) return const [];
+    deleted.addAll(sourceMediaIds);
+    media.removeWhere((m) => sourceMediaIds.contains(m.sourceMediaId));
+    return sourceMediaIds;
+  }
 }

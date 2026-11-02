@@ -128,6 +128,19 @@ class PhotoManagerMediaLibrary implements MediaLibrary {
     return asset?.originFile;
   }
 
+  @override
+  Future<ScannedMedia?> describe(String sourceMediaId) async {
+    final asset = await AssetEntity.fromId(sourceMediaId);
+    if (asset == null) return null;
+    return _toScanned(asset, await asset.fileSize);
+  }
+
+  /// On Android 11+ this is MediaStore.createDeleteRequest: the system asks
+  /// the user and deletes all or nothing.
+  @override
+  Future<List<String>> delete(List<String> sourceMediaIds) =>
+      PhotoManager.editor.deleteWithIds(sourceMediaIds);
+
   static MediaAccess _toAccess(PermissionState state) {
     if (state.isAuth) return MediaAccess.full;
     if (state.hasAccess) return MediaAccess.limited;

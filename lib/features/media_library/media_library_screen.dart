@@ -8,6 +8,7 @@ import '../../data/database/app_database.dart';
 import '../../data/models/media_enums.dart';
 import '../../data/providers.dart';
 import '../../data/repositories/media_inventory_repository.dart';
+import 'cleanup_flow.dart';
 import 'media_access_notice.dart';
 import 'media_display.dart';
 import 'media_library_providers.dart';
@@ -15,8 +16,8 @@ import 'media_scan_controller.dart';
 import 'media_thumbnail.dart';
 import '../transfer/transfer_controller.dart';
 
-/// Items picked for "Transfer selected". Only pending or failed items can
-/// be selected; manual deletion of transferred items comes in Milestone 6.
+/// Items picked in the current tab: pending or failed ones to transfer,
+/// transferred ones to delete from this phone. Cleared on tab change.
 final librarySelectionProvider =
     NotifierProvider.autoDispose<LibrarySelection, Set<int>>(
       LibrarySelection.new,
@@ -26,16 +27,20 @@ class LibrarySelection extends Notifier<Set<int>> {
   @override
   Set<int> build() => const {};
 
-  void toggle(int id) => state = state.contains(id)
-      ? ({...state}..remove(id))
-      : {...state, id};
+  void toggle(int id) =>
+      state = state.contains(id) ? ({...state}..remove(id)) : {...state, id};
+
+  void selectAll(Iterable<int> ids) => state = {...state, ...ids};
 
   void clear() => state = const {};
 }
 
-bool _selectable(MediaItem item) =>
+bool _selectable(MediaItem item, LibraryTab tab) => switch (tab) {
+  LibraryTab.transferred => item.status == TransferStatus.transferred,
+  _ =>
     item.status == TransferStatus.pending ||
-    item.status == TransferStatus.failed;
+        item.status == TransferStatus.failed,
+};
 
 /// Sender library: Pending, Transferred and Failed tabs (plan §10).
 class MediaLibraryScreen extends ConsumerStatefulWidget {
@@ -47,99 +52,161 @@ class MediaLibraryScreen extends ConsumerStatefulWidget {
   ConsumerState<MediaLibraryScreen> createState() => _MediaLibraryScreenState();
 }
 
-class _MediaLibraryScreenState extends ConsumerState<MediaLibraryScreen> {
+class _MediaLibraryScreenState extends ConsumerState<MediaLibraryScreen>
+    with SingleTickerProviderStateMixin {
   late final AppLifecycleListener _lifecycle;
+  late final TabController _tabs;
+
+  LibraryTab get _tab => LibraryTab.values[_tabs.index];
 
   @override
   void initState() {
     super.initState();
+    _tabs = TabController(
+      length: LibraryTab.values.length,
+      initialIndex: widget.initialTab.index,
+      vsync: this,
+    )..addListener(_onTabChanged);
     // The user may have changed photo access in system settings.
     _lifecycle = AppLifecycleListener(
       onResume: () => ref.invalidate(mediaAccessProvider),
     );
   }
 
+  void _onTabChanged() {
+    if (_tabs.indexIsChanging) return;
+    ref.read(librarySelectionProvider.notifier).clear();
+    setState(() {});
+  }
+
+  void _selectAll() {
+    final items = ref.read(libraryTabItemsProvider(_tab)).value ?? const [];
+    ref.read(librarySelectionProvider.notifier).selectAll([
+      for (final item in items)
+        if (_selectable(item, _tab)) item.id,
+    ]);
+  }
+
+  void _transfer(Set<int> ids) {
+    ref.read(transferControllerProvider.notifier).start(itemIds: ids);
+    ref.read(librarySelectionProvider.notifier).clear();
+    context.push(AppRoutes.transfer);
+  }
+
+  Future<void> _delete(Set<int> ids) async {
+    if (await confirmAndDeleteOriginals(context, ref, ids)) {
+      ref.read(librarySelectionProvider.notifier).clear();
+    }
+  }
+
   @override
   void dispose() {
     _lifecycle.dispose();
+    _tabs.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final stats = ref.watch(inventoryStatsProvider).value ?? InventoryStats.empty;
+    final stats =
+        ref.watch(inventoryStatsProvider).value ?? InventoryStats.empty;
     final scan = ref.watch(mediaScanControllerProvider);
     final selection = ref.watch(librarySelectionProvider);
     final paired = ref.watch(pairedDeviceProvider).value != null;
     final transferring = ref.watch(transferControllerProvider).isRunning;
+    final tab = _tab;
+    final failedIds = tab == LibraryTab.failed
+        ? [
+            for (final item
+                in ref.watch(libraryTabItemsProvider(tab)).value ??
+                    const <MediaItem>[])
+              item.id,
+          ]
+        : const <int>[];
 
-    return DefaultTabController(
-      length: LibraryTab.values.length,
-      initialIndex: widget.initialTab.index,
-      child: Scaffold(
-        appBar: AppBar(
-          leading: selection.isEmpty
-              ? null
-              : IconButton(
-                  tooltip: 'Clear selection',
-                  icon: const Icon(Icons.close_rounded),
-                  onPressed: ref.read(librarySelectionProvider.notifier).clear,
-                ),
-          title: Text(
-            selection.isEmpty
-                ? 'Camera library'
-                : '${formatCount(selection.length)} selected',
-          ),
-          actions: [
-            if (selection.isNotEmpty)
+    return Scaffold(
+      appBar: AppBar(
+        leading: selection.isEmpty
+            ? null
+            : IconButton(
+                tooltip: 'Clear selection',
+                icon: const Icon(Icons.close_rounded),
+                onPressed: ref.read(librarySelectionProvider.notifier).clear,
+              ),
+        title: Text(
+          selection.isEmpty
+              ? 'Camera library'
+              : '${formatCount(selection.length)} selected',
+        ),
+        actions: [
+          if (selection.isNotEmpty) ...[
+            IconButton(
+              tooltip: 'Select all',
+              icon: const Icon(Icons.select_all_rounded),
+              onPressed: _selectAll,
+            ),
+            if (tab == LibraryTab.transferred)
+              IconButton(
+                tooltip: 'Delete from this phone',
+                icon: const Icon(Icons.delete_outline_rounded),
+                onPressed: () => _delete(selection),
+              )
+            else
               IconButton(
                 tooltip: paired ? 'Transfer selected' : 'Pair a receiver first',
                 icon: const Icon(Icons.send_rounded),
                 onPressed: paired && !transferring
-                    ? () {
-                        ref
-                            .read(transferControllerProvider.notifier)
-                            .start(itemIds: selection);
-                        ref.read(librarySelectionProvider.notifier).clear();
-                        context.push(AppRoutes.transfer);
-                      }
+                    ? () => _transfer(selection)
                     : null,
-              )
-            else
+              ),
+          ] else ...[
+            if (failedIds.isNotEmpty)
               IconButton(
-                tooltip: 'Scan again',
-                icon: const Icon(Icons.refresh_rounded),
-                onPressed: scan.isBusy
-                    ? null
-                    : ref.read(mediaScanControllerProvider.notifier).scan,
+                tooltip: paired ? 'Retry all' : 'Pair a receiver first',
+                icon: const Icon(Icons.replay_rounded),
+                onPressed: paired && !transferring
+                    ? () => _transfer(failedIds.toSet())
+                    : null,
               ),
+            IconButton(
+              tooltip: 'Scan again',
+              icon: const Icon(Icons.refresh_rounded),
+              onPressed: scan.isBusy
+                  ? null
+                  : ref.read(mediaScanControllerProvider.notifier).scan,
+            ),
           ],
-          bottom: TabBar(
-            tabs: [
-              for (final tab in LibraryTab.values)
-                Tab(text: '${tab.label} (${formatCount(stats.countFor(tab))})'),
-            ],
+        ],
+        bottom: TabBar(
+          controller: _tabs,
+          // Labels with counts don't fit three equal tabs on a phone.
+          isScrollable: true,
+          tabAlignment: TabAlignment.center,
+          tabs: [
+            for (final tab in LibraryTab.values)
+              Tab(text: '${tab.label} (${formatCount(stats.countFor(tab))})'),
+          ],
+        ),
+      ),
+      body: Column(
+        children: [
+          if (scan.isBusy)
+            LinearProgressIndicator(
+              value: scan.total > 0 ? scan.scanned / scan.total : null,
+            ),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(12, 12, 12, 0),
+            child: MediaAccessNotice(),
           ),
-        ),
-        body: Column(
-          children: [
-            if (scan.isBusy)
-              LinearProgressIndicator(
-                value: scan.total > 0 ? scan.scanned / scan.total : null,
-              ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(12, 12, 12, 0),
-              child: MediaAccessNotice(),
+          Expanded(
+            child: TabBarView(
+              controller: _tabs,
+              children: [
+                for (final tab in LibraryTab.values) _LibraryTabView(tab),
+              ],
             ),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  for (final tab in LibraryTab.values) _LibraryTabView(tab),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -153,18 +220,61 @@ class _LibraryTabView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return switch (ref.watch(libraryTabItemsProvider(tab))) {
-      AsyncData(value: final items) when items.isEmpty => _EmptyTab(tab),
-      AsyncData(value: final items) => _MediaGrid(items),
+      AsyncData(value: final items) => Column(
+        children: [
+          if (tab == LibraryTab.transferred) const _CleanupHint(),
+          Expanded(
+            child: items.isEmpty ? _EmptyTab(tab) : _MediaGrid(items, tab),
+          ),
+        ],
+      ),
       AsyncError(:final error) => Center(child: Text('Could not load: $error')),
       _ => const Center(child: CircularProgressIndicator()),
     };
   }
 }
 
+/// Explains deletion in the Transferred tab, and what it has freed.
+class _CleanupHint extends ConsumerWidget {
+  const _CleanupHint();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final deleted = ref.watch(deletedTotalsProvider).value;
+    final freed = deleted == null || deleted.files == 0
+        ? ''
+        : ' Freed so far: ${formatBytes(deleted.bytes)}.';
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      child: Row(
+        children: [
+          Icon(
+            Icons.verified_outlined,
+            size: 18,
+            color: theme.colorScheme.primary,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Verified on the receiver. Long-press to select files to '
+              'delete from this phone.$freed',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _MediaGrid extends ConsumerWidget {
-  const _MediaGrid(this.items);
+  const _MediaGrid(this.items, this.tab);
 
   final List<MediaItem> items;
+  final LibraryTab tab;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -180,7 +290,7 @@ class _MediaGrid extends ConsumerWidget {
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
-        final selectable = _selectable(item);
+        final selectable = _selectable(item, tab);
         return MediaThumbnail(
           key: ValueKey(item.id),
           item: item,
@@ -260,10 +370,7 @@ class _MediaDetails extends StatelessWidget {
       if (taken != null)
         (
           'Taken',
-          formatDateTime(
-            context,
-            DateTime.fromMillisecondsSinceEpoch(taken),
-          ),
+          formatDateTime(context, DateTime.fromMillisecondsSinceEpoch(taken)),
         ),
       ('Size', formatBytes(item.sizeBytes)),
       ('Type', item.mimeType),

@@ -7,6 +7,7 @@ import '../../data/models/media_enums.dart';
 import '../../data/plugin_adapters/media_library.dart';
 import '../../data/providers.dart';
 import '../../data/repositories/media_inventory_repository.dart';
+import '../../services/media_cleanup_service.dart';
 import '../../services/media_scan_service.dart';
 
 final mediaScanServiceProvider = Provider<MediaScanService>(
@@ -15,6 +16,18 @@ final mediaScanServiceProvider = Provider<MediaScanService>(
     inventory: ref.watch(mediaInventoryRepositoryProvider),
     settings: ref.watch(settingsRepositoryProvider),
   ),
+);
+
+final mediaCleanupServiceProvider = Provider<MediaCleanupService>(
+  (ref) => MediaCleanupService(
+    inventory: ref.watch(mediaInventoryRepositoryProvider),
+    library: ref.watch(mediaLibraryProvider),
+  ),
+);
+
+/// Originals deleted from this phone after transfer.
+final deletedTotalsProvider = StreamProvider<({int files, int bytes})>(
+  (ref) => ref.watch(mediaInventoryRepositoryProvider).watchDeleted(),
 );
 
 final inventoryStatsProvider = StreamProvider<InventoryStats>(

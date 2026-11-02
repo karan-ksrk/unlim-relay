@@ -95,6 +95,15 @@ abstract interface class MediaInventoryRepository {
   Stream<({int photos, int videos})> watchTransferredSince(DateTime since);
 
   Stream<InventoryStats> watchStats();
+
+  Future<List<MediaItem>> itemsByIds(Set<int> ids);
+
+  /// Records that the user deleted these originals from this phone. The
+  /// rows stay as tombstones (plan §10).
+  Future<void> markDeleted(Set<int> ids, DateTime at);
+
+  /// Originals deleted from this phone after transfer, and their size.
+  Stream<({int files, int bytes})> watchDeleted();
 }
 
 class DriftMediaInventoryRepository implements MediaInventoryRepository {
@@ -121,8 +130,7 @@ class DriftMediaInventoryRepository implements MediaInventoryRepository {
     final query = _db.select(_db.mediaItems)
       ..where(
         (t) =>
-            t.status.isInValues(tab.statuses) &
-            t.removedFromLibraryAt.isNull(),
+            t.status.isInValues(tab.statuses) & t.removedFromLibraryAt.isNull(),
       )
       ..orderBy([
         (t) => OrderingTerm.desc(t.dateTakenMillis),
@@ -176,9 +184,11 @@ class DriftMediaInventoryRepository implements MediaInventoryRepository {
 
   @override
   Future<int> resetInterrupted() =>
-      (_db.update(_db.mediaItems)
-            ..where((t) => t.status.isInValues(_inFlight)))
-          .write(const MediaItemsCompanion(status: Value(TransferStatus.pending)));
+      (_db.update(
+        _db.mediaItems,
+      )..where((t) => t.status.isInValues(_inFlight))).write(
+        const MediaItemsCompanion(status: Value(TransferStatus.pending)),
+      );
 
   @override
   Future<void> setStatus(int id, TransferStatus status, {String? error}) async {
@@ -222,7 +232,8 @@ class DriftMediaInventoryRepository implements MediaInventoryRepository {
       var videos = 0;
       for (final row in rows) {
         final n = row.read(count) ?? 0;
-        if (row.readWithConverter<MediaKind, String>(t.kind) == MediaKind.video) {
+        if (row.readWithConverter<MediaKind, String>(t.kind) ==
+            MediaKind.video) {
           videos += n;
         } else {
           photos += n;
@@ -230,6 +241,34 @@ class DriftMediaInventoryRepository implements MediaInventoryRepository {
       }
       return (photos: photos, videos: videos);
     });
+  }
+
+  @override
+  Future<List<MediaItem>> itemsByIds(Set<int> ids) =>
+      (_db.select(_db.mediaItems)..where((t) => t.id.isIn(ids))).get();
+
+  @override
+  Future<void> markDeleted(Set<int> ids, DateTime at) async {
+    if (ids.isEmpty) return;
+    await (_db.update(_db.mediaItems)..where((t) => t.id.isIn(ids))).write(
+      MediaItemsCompanion(
+        deletedAt: Value(at),
+        removedFromLibraryAt: Value(at),
+      ),
+    );
+  }
+
+  @override
+  Stream<({int files, int bytes})> watchDeleted() {
+    final t = _db.mediaItems;
+    final count = t.id.count();
+    final bytes = t.sizeBytes.sum();
+    final query = _db.selectOnly(t)
+      ..addColumns([count, bytes])
+      ..where(t.deletedAt.isNotNull());
+    return query.watchSingle().map(
+      (row) => (files: row.read(count) ?? 0, bytes: row.read(bytes) ?? 0),
+    );
   }
 
   @override
