@@ -39,7 +39,13 @@ for the full plan.
 - **Background receiving**: *Ready to receive* runs as a foreground
   service, so the receiver keeps listening with the screen off.
 
-Manual cleanup and hardening are next. See [docs/schedule.md](docs/schedule.md),
+- **Milestone 6** (brand): Relay Loop logo (vector adaptive launcher icon
+  with a themed-icon layer), a 2-second launch animation drawn in code
+  (tap to skip, fade-only with animations off) and an original launch
+  chime synthesized by `tool/generate_launch_sound.py`, muted in silent or
+  vibrate mode and switchable in Settings. See [docs/brand.md](docs/brand.md).
+
+Manual cleanup and hardening (Milestone 7) are next. See [docs/schedule.md](docs/schedule.md),
 [docs/transfer.md](docs/transfer.md),
 [docs/pairing.md](docs/pairing.md),
 [docs/device-compatibility.md](docs/device-compatibility.md) and
@@ -66,7 +72,8 @@ lib/
               client, wire protocol, schedule planner and job
   background/ WorkManager entry point (separate engine)
   features/   onboarding, home, media_library, pairing, transfer,
-              schedule, settings
+              schedule, launch, settings
+tool/         launch sound generator, launcher icon renderer
 test/
   unit/       repositories, controllers, protocol, migrations
   integration/ real TLS pairing over loopback

@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../app/router.dart';
-import '../../app/widgets/luma_mark.dart';
+import '../../app/widgets/relay_loop.dart';
 import '../../core/utils/formatters.dart';
 import '../../data/database/app_database.dart';
 import '../../data/models/device_role.dart';
@@ -59,7 +59,7 @@ class HomeScreen extends ConsumerWidget {
               padding: const EdgeInsets.all(20),
               child: Row(
                 children: [
-                  const LumaMark(size: 56),
+                  const AppMark(size: 56),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(

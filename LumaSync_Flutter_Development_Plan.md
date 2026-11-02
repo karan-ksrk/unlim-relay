@@ -854,7 +854,20 @@ duration/resolution. - Confirm no image/video recompression occurred.
 -   Add notifications and last-run status.
 -   Validate on both actual phones.
 
-### Milestone 6 --- Manual cleanup and hardening
+### Milestone 6 --- Brand, launch animation and sound
+
+-   Design several original logo concepts for UNLIM RELAY and confirm
+    one with the user before building anything on it.
+-   Use the chosen logo for the launcher icon (including the Android
+    adaptive icon) and the in-app brand mark.
+-   Build a short launch animation with modern motion design that
+    continues from the native splash, never blocks a cold start for
+    long, and can be skipped by tapping.
+-   Add an original launch sound effect (generated in-house, no
+    third-party audio), played quietly once per cold start; respect
+    silent/vibrate mode and provide a setting to turn it off.
+
+### Milestone 7 --- Manual cleanup and hardening
 
 -   Implement transferred-only selection.
 -   Add confirmation and Android deletion flow.

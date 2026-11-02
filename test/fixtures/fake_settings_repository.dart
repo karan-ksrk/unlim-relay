@@ -11,6 +11,7 @@ class FakeSettingsRepository implements SettingsRepository {
   String id = 'test-device-id';
   TransferLimits limits = const TransferLimits();
   bool receiverReady = false;
+  bool launchSound = true;
 
   @override
   Future<DeviceRole?> readDeviceRole() async => role;
@@ -42,4 +43,10 @@ class FakeSettingsRepository implements SettingsRepository {
 
   @override
   Future<void> saveReceiverReady(bool ready) async => receiverReady = ready;
+
+  @override
+  Future<bool> readLaunchSound() async => launchSound;
+
+  @override
+  Future<void> saveLaunchSound(bool enabled) async => launchSound = enabled;
 }

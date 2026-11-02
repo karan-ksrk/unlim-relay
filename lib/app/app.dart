@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../features/launch/launch_intro.dart';
 import '../features/pairing/pairing_approval_listener.dart';
 import 'router.dart';
 import 'theme.dart';
@@ -18,9 +19,11 @@ class LumaSyncApp extends ConsumerWidget {
       darkTheme: AppTheme.dark(),
       themeMode: ThemeMode.system,
       routerConfig: ref.watch(routerProvider),
-      builder: (context, child) => PairingApprovalListener(
-        navigatorKey: rootNavigatorKey,
-        child: child!,
+      builder: (context, child) => LaunchIntro(
+        child: PairingApprovalListener(
+          navigatorKey: rootNavigatorKey,
+          child: child!,
+        ),
       ),
     );
   }

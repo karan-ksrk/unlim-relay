@@ -26,6 +26,11 @@ abstract interface class SettingsRepository {
   Future<bool> readReceiverReady();
 
   Future<void> saveReceiverReady(bool ready);
+
+  /// Whether the launch animation plays its sound. On by default.
+  Future<bool> readLaunchSound();
+
+  Future<void> saveLaunchSound(bool enabled);
 }
 
 class DriftSettingsRepository implements SettingsRepository {
@@ -39,6 +44,7 @@ class DriftSettingsRepository implements SettingsRepository {
   static const _photoLimitKey = 'daily_photo_limit';
   static const _videoLimitKey = 'daily_video_limit';
   static const _receiverReadyKey = 'receiver_ready';
+  static const _launchSoundKey = 'launch_sound';
 
   /// Stored for "no limit", since a missing key means "use the default".
   static const _unlimited = 'none';
@@ -102,6 +108,14 @@ class DriftSettingsRepository implements SettingsRepository {
   @override
   Future<void> saveReceiverReady(bool ready) =>
       _write(_receiverReadyKey, '$ready');
+
+  @override
+  Future<bool> readLaunchSound() async =>
+      await _read(_launchSoundKey) != 'false';
+
+  @override
+  Future<void> saveLaunchSound(bool enabled) =>
+      _write(_launchSoundKey, '$enabled');
 
   static int? _parseLimit(String? stored, int fallback) {
     if (stored == null) return fallback;

@@ -7,6 +7,8 @@ import 'package:lumasync/data/plugin_adapters/receiver_keep_alive.dart';
 import 'package:lumasync/data/plugin_adapters/screen_wake_lock.dart';
 import 'package:lumasync/data/plugin_adapters/service_discovery.dart';
 import 'package:lumasync/data/providers.dart';
+import 'package:lumasync/data/plugin_adapters/launch_sound.dart';
+import 'package:lumasync/features/launch/launch_intro.dart';
 import 'package:lumasync/features/schedule/schedule_controller.dart';
 
 import 'fake_schedule_plugins.dart';
@@ -36,6 +38,13 @@ class FakeReceiverKeepAlive implements ReceiverKeepAlive {
 
   @override
   Future<void> stop() async => running = false;
+}
+
+class FakeLaunchSound implements LaunchSound {
+  int plays = 0;
+
+  @override
+  Future<void> play() async => plays++;
 }
 
 class FakeServiceDiscovery implements ServiceDiscovery {
@@ -90,6 +99,8 @@ List<Override> appOverrides({
   ),
   batteryOptimizationProvider.overrideWithValue(FakeBatteryOptimization()),
   backgroundPollIntervalProvider.overrideWithValue(null),
+  launchIntroEnabledProvider.overrideWithValue(false),
+  launchSoundProvider.overrideWithValue(FakeLaunchSound()),
   stagingDirectoryProvider.overrideWith(
     (ref) async => Directory.systemTemp.createTemp('lumasync_staging_'),
   ),

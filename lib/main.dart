@@ -15,6 +15,7 @@ import 'data/providers.dart';
 import 'data/repositories/schedule_repository.dart';
 import 'data/repositories/settings_repository.dart';
 import 'data/repositories/transfer_lock_repository.dart';
+import 'features/launch/launch_intro.dart';
 import 'services/scheduled_transfer_job.dart';
 
 Future<void> main() async {
@@ -23,26 +24,32 @@ Future<void> main() async {
 
   final database = AppDatabase.defaults();
   final settings = DriftSettingsRepository(database);
-  final initialRole = await settings.readDeviceRole();
-  final localDevice = LocalDevice(
-    id: await settings.deviceId(),
-    displayName: await const DeviceInfoPlusSource().displayName(),
-  );
+  // Everything here delays the first frame, so read it all at once.
+  final (initialRole, launchSound, deviceId, displayName) = await (
+    settings.readDeviceRole(),
+    settings.readLaunchSound(),
+    settings.deviceId(),
+    const DeviceInfoPlusSource().displayName(),
+  ).wait;
+  final localDevice = LocalDevice(id: deviceId, displayName: displayName);
 
-  await WorkmanagerBackgroundScheduler.initialize(callbackDispatcher);
-  // Re-register the daily run on every start (plan §9), e.g. after an app
-  // update or a force-stop cleared it.
+  // Off the first-frame path. Re-registers the daily run on every start
+  // (plan §9), e.g. after an app update or a force-stop cleared it.
   unawaited(
-    ScheduleCoordinator(
-      schedule: DriftScheduleRepository(database),
-      scheduler: const WorkmanagerBackgroundScheduler(),
-      locks: DriftTransferLockRepository(database),
-      settings: settings,
-    ).sync().then<void>(
-      (_) {},
-      onError: (Object e) =>
-          Logger('main').warning('Schedule sync on start failed: $e'),
-    ),
+    WorkmanagerBackgroundScheduler.initialize(callbackDispatcher)
+        .then(
+          (_) => ScheduleCoordinator(
+            schedule: DriftScheduleRepository(database),
+            scheduler: const WorkmanagerBackgroundScheduler(),
+            locks: DriftTransferLockRepository(database),
+            settings: settings,
+          ).sync(),
+        )
+        .then<void>(
+          (_) {},
+          onError: (Object e) =>
+              Logger('main').warning('Schedule setup on start failed: $e'),
+        ),
   );
 
   runApp(
@@ -51,6 +58,7 @@ Future<void> main() async {
         appDatabaseProvider.overrideWithValue(database),
         initialDeviceRoleProvider.overrideWithValue(initialRole),
         localDeviceProvider.overrideWithValue(localDevice),
+        initialLaunchSoundProvider.overrideWithValue(launchSound),
       ],
       child: const LumaSyncApp(),
     ),

@@ -7,6 +7,7 @@ import '../../data/models/device_role.dart';
 import '../../data/providers.dart';
 import '../onboarding/device_role_controller.dart';
 import '../onboarding/device_role_display.dart';
+import '../launch/launch_intro.dart';
 import '../pairing/receiver_controller.dart';
 import '../schedule/schedule_controller.dart';
 import '../schedule/schedule_text.dart';
@@ -70,7 +71,8 @@ class SettingsScreen extends ConsumerWidget {
             leading: const Icon(Icons.link_rounded),
             title: const Text('Paired device'),
             subtitle: Text(
-              ref.watch(pairedDeviceProvider).value?.displayName ?? 'Not paired',
+              ref.watch(pairedDeviceProvider).value?.displayName ??
+                  'Not paired',
             ),
             onTap: () => context.push(AppRoutes.pair),
           ),
@@ -78,26 +80,32 @@ class SettingsScreen extends ConsumerWidget {
             ListTile(
               leading: const Icon(Icons.speed_rounded),
               title: const Text('Daily transfer limit'),
-              subtitle: Text(
-                switch (ref.watch(transferLimitsProvider).value) {
-                  final limits? => describeLimits(limits),
-                  null => '…',
-                },
-              ),
+              subtitle: Text(switch (ref.watch(transferLimitsProvider).value) {
+                final limits? => describeLimits(limits),
+                null => '…',
+              }),
               onTap: () => _editLimits(context, ref),
             ),
           if (role == DeviceRole.sender)
             ListTile(
               leading: const Icon(Icons.schedule_rounded),
               title: const Text('Daily transfer'),
-              subtitle: Text(
-                switch (ref.watch(scheduleProvider).value) {
-                  (final settings, _)? => describeSchedule(context, settings),
-                  null => '…',
-                },
-              ),
+              subtitle: Text(switch (ref.watch(scheduleProvider).value) {
+                (final settings, _)? => describeSchedule(context, settings),
+                null => '…',
+              }),
               onTap: () => context.push(AppRoutes.schedule),
             ),
+          SwitchListTile(
+            secondary: const Icon(Icons.music_note_outlined),
+            title: const Text('Launch sound'),
+            subtitle: const Text(
+              'A short chime with the opening animation. Muted when the '
+              'phone is on silent or vibrate.',
+            ),
+            value: ref.watch(launchSoundEnabledProvider),
+            onChanged: ref.read(launchSoundEnabledProvider.notifier).set,
+          ),
           ListTile(
             leading: const Icon(Icons.swap_horiz_rounded),
             title: const Text('Change role'),

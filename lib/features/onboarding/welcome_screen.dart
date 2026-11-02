@@ -2,7 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../app/router.dart';
-import '../../app/widgets/luma_mark.dart';
+import '../../app/widgets/relay_loop.dart';
 import '../../app/app_info.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -19,7 +19,7 @@ class WelcomeScreen extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
                 children: [
-                  const Center(child: LumaMark(size: 88)),
+                  const Center(child: AppMark(size: 88)),
                   const SizedBox(height: 20),
                   Text(
                     appName,

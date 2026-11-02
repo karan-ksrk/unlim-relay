@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Relay Loop mark, same geometry as lib/app/widgets/relay_loop.dart
+     (512-unit square), scaled into the adaptive icon's 66dp safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+    <group
+        android:pivotX="256"
+        android:pivotY="256"
+        android:scaleX="0.78"
+        android:scaleY="0.78">
+        <path
+            android:fillColor="#00000000"
+            android:pathData="M256,256C210,186 112,186 112,256C112,326 210,326 256,256C302,186 400,186 400,256C400,326 302,326 256,256Z"
+            android:strokeLineJoin="round"
+            android:strokeWidth="48">
+            <aapt:attr name="android:strokeColor">
+                <gradient
+                    android:endX="400"
+                    android:endY="203"
+                    android:startX="112"
+                    android:startY="309"
+                    android:type="linear">
+                    <item android:color="#FF06B6D4" android:offset="0" />
+                    <item android:color="#FF4F46E5" android:offset="0.55" />
+                    <item android:color="#FF7C3AED" android:offset="1" />
+                </gradient>
+            </aapt:attr>
+        </path>
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M329,204a20,20 0,1 0,40 0a20,20 0,1 0,-40 0Z" />
+    </group>
+</vector>
